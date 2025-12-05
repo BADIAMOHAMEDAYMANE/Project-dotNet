@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "eGf4WQ3wAIk=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\youne\\Desktop\\carrental\\CarRentalSolution\\src\\CarRental.Core\\CarRental.Core.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\youne\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.0\\microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\youne\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\10.0.0\\microsoft.extensions.logging.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\youne\\.nuget\\packages\\system.diagnostics.diagnosticsource\\10.0.0\\system.diagnostics.diagnosticsource.10.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
