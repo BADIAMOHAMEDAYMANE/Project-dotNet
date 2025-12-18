@@ -1,0 +1,549 @@
+﻿@model CarRental.Core.Models.Vehicule
+
+@{
+    ViewData["Title"] = "Détails du Véhicule";
+    var vehicule = Model;
+
+    // Calculs pour l'affichage
+    var ageVehicule = vehicule.Annee.HasValue ? (DateTime.Now.Year - vehicule.Annee.Value) : (int?)null;
+    var joursDepuisEntretien = vehicule.DateDernierEntretien.HasValue ?
+        (DateTime.Now - vehicule.DateDernierEntretien.Value).Days : (int?)null;
+    var kmDepuisEntretien = vehicule.KilometrageDernierEntretien.HasValue ?
+        (vehicule.Kilometrage - vehicule.KilometrageDernierEntretien.Value) : (int?)null;
+}
+
+<div class="container mt-4">
+    <!-- Bouton retour -->
+    <div class="mb-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Colonne principale -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-car me-2"></i>@ViewData["Title"]
+                        </h4>
+                        <div>
+                            @{
+                                var statusClass = vehicule.Statut switch
+                                {
+                                    "Disponible" => "bg-success",
+                                    "Loué" => "bg-warning",
+                                    "En maintenance" => "bg-info",
+                                    "Indisponible" => "bg-danger",
+                                    _ => "bg-secondary"
+                                };
+                            }
+                            <span class="badge @statusClass status-badge">
+                                <i class="fas fa-circle me-1"></i>@vehicule.Statut
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <!-- Informations principales -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="fas fa-car me-2 text-primary"></i>Informations du Véhicule
+                            </h5>
+
+                            <div class="row mb-2">
+                                <div class="col-4 info-label">Marque :</div>
+                                <div class="col-8 info-value">
+                                    <strong class="text-primary">@vehicule.Marque</strong>
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-4 info-label">Modèle :</div>
+                                <div class="col-8 info-value">@vehicule.Modele</div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-4 info-label">Immatriculation :</div>
+                                <div class="col-8 info-value">
+                                    <code class="bg-light p-2 rounded d-inline-block">@vehicule.Immatriculation</code>
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-4 info-label">Année :</div>
+                                <div class="col-8 info-value">
+                                    @if (vehicule.Annee.HasValue)
+                                    {
+                                        @vehicule.Annee.Value
+                                        <span class="badge bg-info ms-2">
+                                            @ageVehicule ans
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Non spécifiée</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-4 info-label">Couleur :</div>
+                                <div class="col-8 info-value">
+                                    @if (!string.IsNullOrEmpty(vehicule.Couleur))
+                                    {
+                                        <span class="badge" style="background-color: @GetColorCode(vehicule.Couleur); color: white;">
+                                            @vehicule.Couleur
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Non spécifiée</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="fas fa-info-circle me-2 text-primary"></i>Spécifications
+                            </h5>
+
+                            <div class="row mb-2">
+                                <div class="col-5 info-label">Kilométrage :</div>
+                                <div class="col-7 info-value">
+                                    <i class="fas fa-road me-1 text-secondary"></i>
+                                    @vehicule.Kilometrage.ToString("N0") <text>km</text>
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-5 info-label">Nombre de places :</div>
+                                <div class="col-7 info-value">
+                                    <i class="fas fa-users me-1 text-secondary"></i>
+                                    @vehicule.NombrePlaces places
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-5 info-label">Prix d'achat :</div>
+                                <div class="col-7 info-value">
+                                    @if (vehicule.PrixAchat.HasValue)
+                                    {
+                                        <i class="fas fa-tag me-1 text-secondary"></i>
+                                        @vehicule.PrixAchat.Value.ToString("N2") <text>MAD</text>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Non spécifié</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-5 info-label">Date d'achat :</div>
+                                <div class="col-7 info-value">
+                                    @if (vehicule.DateAchat.HasValue)
+                                    {
+                                        <i class="fas fa-calendar-alt me-1 text-secondary"></i>
+                                        @vehicule.DateAchat.Value.ToString("dd/MM/yyyy")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Non spécifiée</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-5 info-label">Statut actif :</div>
+                                <div class="col-7 info-value">
+                                    @if (vehicule.EstActif)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>Actif
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times me-1"></i>Inactif
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informations catégorie -->
+                    @if (vehicule.Categorie != null)
+                    {
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-tags me-2 text-primary"></i>Informations de la Catégorie
+                                </h5>
+
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="row mb-2">
+                                                    <div class="col-4 info-label">Nom :</div>
+                                                    <div class="col-8 info-value">
+                                                        <span class="badge bg-info">
+                                                            @vehicule.Categorie.Nom
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row mb-2">
+                                                    <div class="col-4 info-label">Description :</div>
+                                                    <div class="col-8 info-value">
+                                                        @if (!string.IsNullOrEmpty(vehicule.Categorie.Description))
+                                                        {
+                                                            @vehicule.Categorie.Description
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">Aucune description</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="alert alert-info mb-0">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    <strong>ID Catégorie :</strong> @vehicule.Categorie.Id
+                                                    <br>
+                                                    <small>Cette catégorie regroupe des véhicules similaires.</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-tags me-2 text-primary"></i>Catégorie
+                                </h5>
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Ce véhicule n'est pas associé à une catégorie.
+                                    <a asp-action="Edit" asp-route-id="@vehicule.Id" class="alert-link">
+                                        Modifier le véhicule pour ajouter une catégorie.
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Informations entretien -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="fas fa-wrench me-2 text-primary"></i>Dernier Entretien
+                            </h5>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row mb-2">
+                                        <div class="col-5 info-label">Date :</div>
+                                        <div class="col-7 info-value">
+                                            @if (vehicule.DateDernierEntretien.HasValue && joursDepuisEntretien.HasValue)
+                                            {
+                                                <i class="fas fa-calendar-check me-1 text-secondary"></i>
+                                                @vehicule.DateDernierEntretien.Value.ToString("dd/MM/yyyy")
+
+                                                string joursBadgeClass = "bg-success";
+                                                if (joursDepuisEntretien.Value > 180)
+                                                {
+                                                    joursBadgeClass = "bg-danger";
+                                                }
+                                                else if (joursDepuisEntretien.Value > 90)
+                                                {
+                                                    joursBadgeClass = "bg-warning";
+                                                }
+
+                                                <span class="badge @joursBadgeClass ms-2">
+                                                    @joursDepuisEntretien.Value <text>jours</text>
+                                                </span>
+                                            }
+                                            else if (vehicule.DateDernierEntretien.HasValue)
+                                            {
+                                                <i class="fas fa-calendar-check me-1 text-secondary"></i>
+                                                @vehicule.DateDernierEntretien.Value.ToString("dd/MM/yyyy")
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Aucun entretien enregistré</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="row mb-2">
+                                        <div class="col-5 info-label">Kilométrage :</div>
+                                        <div class="col-7 info-value">
+                                            @if (vehicule.KilometrageDernierEntretien.HasValue)
+                                            {
+                                                <i class="fas fa-road me-1 text-secondary"></i>
+                                                @vehicule.KilometrageDernierEntretien.Value.ToString("N0") <text>km</text>
+
+                                                if (kmDepuisEntretien.HasValue)
+                                                {
+                                                    string kmBadgeClass = "bg-success";
+                                                    if (kmDepuisEntretien.Value > 10000)
+                                                    {
+                                                        kmBadgeClass = "bg-danger";
+                                                    }
+                                                    else if (kmDepuisEntretien.Value > 5000)
+                                                    {
+                                                        kmBadgeClass = "bg-warning";
+                                                    }
+                                                    <span class="badge @kmBadgeClass ms-2">
+                                                        +@kmDepuisEntretien.Value.ToString("N0") <text>km</text>
+                                                    </span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Non spécifié</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonne latérale -->
+        <div class="col-md-4">
+            <!-- Carte d'actions rapides -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Actions Rapides
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Edit" asp-route-id="@vehicule.Id" class="btn btn-warning">
+                            <i class="fas fa-edit me-2"></i>Modifier le véhicule
+                        </a>
+
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#changeStatusModal">
+                            <i class="fas fa-exchange-alt me-2"></i>Changer le statut
+                        </button>
+
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-2"></i>Voir tous les véhicules
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carte informations résumé -->
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Résumé
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            ID Véhicule
+                            <span class="badge bg-dark">@vehicule.Id</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Catégorie ID
+                            <span class="badge bg-info">
+                                @(vehicule.CategorieId?.ToString() ?? "Aucune")
+                            </span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Date consultation
+                            <small class="text-muted">@DateTime.Now.ToString("dd/MM/yyyy")</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Carte suppression -->
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Zone de danger
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="card-text small text-muted mb-3">
+                        La suppression d'un véhicule est irréversible. Assurez-vous qu'il n'a pas de réservations en cours.
+                    </p>
+                    <button type="button" class="btn btn-outline-danger w-100"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="fas fa-trash me-2"></i>Supprimer ce véhicule
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                    </a>
+                </div>
+
+                <div>
+                    <a asp-action="Edit" asp-route-id="@vehicule.Id" class="btn btn-warning">
+                        <i class="fas fa-edit me-2"></i>Modifier
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal changement de statut -->
+<div class="modal fade" id="changeStatusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exchange-alt me-2"></i>Changer le statut
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="ChangeStatut" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="id" value="@vehicule.Id" />
+
+                    <div class="mb-3">
+                        <label for="statut" class="form-label">Nouveau statut</label>
+                        <select class="form-select" name="statut" id="statut" required>
+                            <option value="Disponible" selected="@(vehicule.Statut == "Disponible")">Disponible</option>
+                            <option value="Loué" selected="@(vehicule.Statut == "Loué")">Loué</option>
+                            <option value="En maintenance" selected="@(vehicule.Statut == "En maintenance")">En maintenance</option>
+                            <option value="Indisponible" selected="@(vehicule.Statut == "Indisponible")">Indisponible</option>
+                        </select>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Le changement de statut sera immédiat.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check me-2"></i>Confirmer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirmation de suppression
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer le véhicule <strong>@vehicule.Marque @vehicule.Modele</strong> ?</p>
+                <p class="text-danger">
+                    <i class="fas fa-exclamation-circle me-1"></i>
+                    Cette action est irréversible. Toutes les données du véhicule seront perdues.
+                </p>
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Attention :</strong> Si ce véhicule a des réservations en cours, vous ne pourrez pas le supprimer.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Annuler
+                </button>
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" name="id" value="@vehicule.Id" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Supprimer définitivement
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Animation de la carte
+            $('.card').css('opacity', '0').animate({ opacity: 1 }, 600);
+
+            // Tooltips
+            $('[title]').tooltip();
+
+            // Copier l'immatriculation au clic
+            $('code').on('click', function() {
+                var text = $(this).text();
+                navigator.clipboard.writeText(text).then(function() {
+                    var original = $(this).html();
+                    $(this).html('<i class="fas fa-check text-success me-1"></i>Copié !');
+                    setTimeout(() => {
+                        $(this).html(original);
+                    }, 2000);
+                }.bind(this));
+            });
+        });
+    </script>
+}
+
+@functions {
+    // Fonction pour obtenir le code couleur CSS
+    public string GetColorCode(string couleur)
+    {
+        var colorMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "Noir", "#000000" },
+            { "Blanc", "#FFFFFF" },
+            { "Gris", "#808080" },
+            { "Bleu", "#0000FF" },
+            { "Rouge", "#FF0000" },
+            { "Argent", "#C0C0C0" },
+            { "Vert", "#008000" },
+            { "Jaune", "#FFFF00" },
+            { "Orange", "#FFA500" },
+            { "Marron", "#A52A2A" }
+        };
+
+        return colorMap.ContainsKey(couleur) ? colorMap[couleur] : "#6c757d";
+    }
+}

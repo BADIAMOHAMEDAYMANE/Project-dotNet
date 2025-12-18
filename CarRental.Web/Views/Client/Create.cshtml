@@ -1,0 +1,192 @@
+﻿@model CarRental.Core.Models.Client
+@{
+    ViewData["Title"] = "Ajouter un Client";
+    var maxDate = DateTime.Today.AddYears(-18).ToString("yyyy-MM-dd");
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+
+    @if (TempData["Success"] != null)
+    {
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    }
+
+    <div class="row">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Informations du client</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <!-- DateInscription sera géré automatiquement par le service -->
+                        <input type="hidden" asp-for="DateInscription" />
+
+                        <!-- SECTION: Informations personnelles -->
+                        <h5 class="mb-3"><i class="fas fa-user me-2"></i>Informations personnelles</h5>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CIN" class="form-label fw-bold">CIN *</label>
+                                <input asp-for="CIN" class="form-control" placeholder="Ex: AB123456" required />
+                                <span asp-validation-for="CIN" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DateNaissance" class="form-label fw-bold">Date de naissance *</label>
+                                <input asp-for="DateNaissance" type="date" class="form-control" max="@maxDate" required />
+                                <small class="form-text text-muted">Le client doit avoir au moins 18 ans</small>
+                                <span asp-validation-for="DateNaissance" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Nom" class="form-label fw-bold">Nom *</label>
+                                <input asp-for="Nom" class="form-control" required />
+                                <span asp-validation-for="Nom" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Prenom" class="form-label fw-bold">Prénom *</label>
+                                <input asp-for="Prenom" class="form-control" required />
+                                <span asp-validation-for="Prenom" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- SECTION: Contact -->
+                        <hr class="my-4" />
+                        <h5 class="mb-3"><i class="fas fa-envelope me-2"></i>Informations de contact</h5>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="form-label fw-bold">Email *</label>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="exemple@email.com" required />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Telephone" class="form-label fw-bold">Téléphone *</label>
+                                <input asp-for="Telephone" class="form-control" placeholder="0612345678" required />
+                                <span asp-validation-for="Telephone" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Adresse" class="form-label fw-bold">Adresse *</label>
+                            <input asp-for="Adresse" class="form-control" placeholder="Rue, numéro..." required />
+                            <span asp-validation-for="Adresse" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Ville" class="form-label fw-bold">Ville *</label>
+                                <input asp-for="Ville" class="form-control" list="villes" required />
+                                <datalist id="villes">
+                                    <option value="Casablanca"></option>
+                                    <option value="Rabat"></option>
+                                    <option value="Marrakech"></option>
+                                    <option value="Fès"></option>
+                                    <option value="Tanger"></option>
+                                    <option value="Agadir"></option>
+                                    <option value="Meknès"></option>
+                                    <option value="Oujda"></option>
+                                    <option value="Kenitra"></option>
+                                    <option value="Tétouan"></option>
+                                </datalist>
+                                <span asp-validation-for="Ville" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CodePostal" class="form-label fw-bold">Code Postal *</label>
+                                <input asp-for="CodePostal" class="form-control" pattern="\d{5}" placeholder="20000" required />
+                                <span asp-validation-for="CodePostal" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- SECTION: Permis de conduire -->
+                        <hr class="my-4" />
+                        <h5 class="mb-3"><i class="fas fa-id-card me-2"></i>Informations du permis</h5>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="NumeroPermis" class="form-label fw-bold">Numéro de permis *</label>
+                                <input asp-for="NumeroPermis" class="form-control" placeholder="Ex: P123456789" required />
+                                <span asp-validation-for="NumeroPermis" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- SECTION: Mot de passe -->
+                        <hr class="my-4" />
+                        <h5 class="mb-3"><i class="fas fa-lock me-2"></i>Sécurité du compte</h5>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Password" class="form-label fw-bold">Mot de passe *</label>
+                                <input asp-for="Password" type="password" class="form-control" placeholder="Minimum 6 caractères" minlength="6" required />
+                                <small class="form-text text-muted">Minimum 6 caractères</small>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ConfirmPassword" class="form-label fw-bold">Confirmer le mot de passe *</label>
+                                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirmez le mot de passe" minlength="6" required />
+                                <small class="form-text text-muted">Doit correspondre au mot de passe</small>
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Information importante :</strong> Le mot de passe sera envoyé par email au client. Il pourra le modifier après sa première connexion.
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fas fa-save me-2"></i> Enregistrer
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Retour
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        // Validation côté client pour la correspondance des mots de passe
+        document.addEventListener('DOMContentLoaded', function() {
+            const password = document.getElementById('Password');
+            const confirmPassword = document.getElementById('ConfirmPassword');
+
+            function validatePassword() {
+                if (password.value !== confirmPassword.value) {
+                    confirmPassword.setCustomValidity('Les mots de passe ne correspondent pas');
+                } else {
+                    confirmPassword.setCustomValidity('');
+                }
+            }
+
+            password.addEventListener('change', validatePassword);
+            confirmPassword.addEventListener('keyup', validatePassword);
+        });
+    </script>
+}

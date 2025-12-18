@@ -1,0 +1,177 @@
+@model CarRental.Core.Models.Location
+
+@{
+    ViewData["Title"] = "Détails de la Location";
+}
+
+<style>
+    .detail-card {
+        border-radius: 14px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    }
+
+    .info-box {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .info-value {
+        font-size: 1.05rem;
+        font-weight: 500;
+    }
+
+    .status-badge {
+        font-size: 0.95rem;
+        padding: 8px 14px;
+        border-radius: 20px;
+    }
+
+    .vehicle-icon {
+        font-size: 3rem;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <div class="card detail-card p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-success mb-0">
+                <i class="fas fa-clipboard-list me-2"></i>@ViewData["Title"]
+            </h2>
+
+            <span class="badge status-badge
+                @(Model.Statut == "Confirmée" ? "bg-success" :
+                  Model.Statut == "Annulée" ? "bg-danger" :
+                  "bg-warning text-dark")">
+                @Model.Statut
+            </span>
+        </div>
+
+        <!-- ================= CLIENT ================= -->
+        <div class="info-box">
+            <h5 class="mb-3">
+                <i class="fas fa-user me-2"></i>Client
+            </h5>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-label">CIN</div>
+                    <div class="info-value">@Model.Client?.CIN</div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="info-label">Nom complet</div>
+                    <div class="info-value">
+                        @Model.Client?.Nom @Model.Client?.Prenom
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VEHICULE ================= -->
+        <div class="info-box">
+            <h5 class="mb-3">
+                <i class="fas fa-car me-2"></i>Véhicule
+            </h5>
+
+            <div class="row align-items-center">
+                <div class="col-md-2 text-center">
+                    <i class="fas fa-car vehicle-icon text-primary"></i>
+                </div>
+
+                <div class="col-md-10">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="info-label">Marque</div>
+                            <div class="info-value">@Model.Vehicule?.Marque</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="info-label">Modèle</div>
+                            <div class="info-value">@Model.Vehicule?.Modele</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="info-label">Immatriculation</div>
+                            <div class="info-value">@Model.Vehicule?.Immatriculation</div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <div class="info-label">Catégorie</div>
+                            <div class="info-value">
+                                @(Model.Vehicule?.Categorie?.Nom ?? "Non catégorisé")
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="info-label">Prix / jour</div>
+                            <div class="info-value text-success">
+                                @Model.Vehicule?.PrixParJour.ToString("N2") €
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= LOCATION ================= -->
+        <div class="info-box">
+            <h5 class="mb-3">
+                <i class="fas fa-calendar-alt me-2"></i>Période de location
+            </h5>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="info-label">Date début</div>
+                    <div class="info-value">
+                        @Model.DateDebut.ToString("dd/MM/yyyy")
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Date fin</div>
+                    <div class="info-value">
+                        @Model.DateFin.ToString("dd/MM/yyyy")
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Durée</div>
+                    <div class="info-value">
+                        @((Model.DateFin - Model.DateDebut).Days) jours
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= COMMENTAIRES ================= -->
+        @if (!string.IsNullOrWhiteSpace(Model.Commentaires))
+        {
+        <div class="info-box">
+            <h5 class="mb-2">
+                <i class="fas fa-comment-dots me-2"></i>Commentaires
+            </h5>
+            <p class="mb-0">@Model.Commentaires</p>
+        </div>
+        }
+
+        <!-- ================= ACTIONS ================= -->
+        <div class="text-end mt-4">
+            <a asp-action="MesLocations" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Retour
+            </a>
+        </div>
+
+    </div>
+</div>

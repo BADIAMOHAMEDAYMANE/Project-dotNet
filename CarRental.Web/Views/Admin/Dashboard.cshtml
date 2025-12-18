@@ -1,0 +1,797 @@
+@{
+    ViewBag.Title = "Tableau de Bord Administrateur";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <style>
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            padding: 2rem 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            min-height: 100vh;
+        }
+
+        .admin-navbar {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid #667eea;
+        }
+            .admin-navbar h1 {
+                color: #667eea;
+                font-weight: 700;
+                margin: 0;
+                font-size: 2rem;
+            }
+
+            .admin-navbar .nav-pills {
+                margin-top: 1rem;
+            }
+
+            .admin-navbar .nav-link {
+                color: #667eea;
+                font-weight: 600;
+                padding: 0.75rem 1.5rem;
+                border-radius: 10px;
+                transition: all 0.3s ease;
+                margin-right: 0.5rem;
+            }
+
+                .admin-navbar .nav-link:hover {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    transform: translateY(-2px);
+                }
+
+                .admin-navbar .nav-link.active {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+                }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .stats-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            }
+
+            .stats-card .icon {
+                width: 60px;
+                height: 60px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.8rem;
+                color: white;
+                margin-bottom: 1rem;
+            }
+
+            .stats-card.employees .icon {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .stats-card.clients .icon {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }
+
+            .stats-card.vehicles .icon {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            }
+
+            .stats-card.pending .icon {
+                background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            }
+
+            .stats-card h3 {
+                color: #2d3748;
+                font-size: 2.5rem;
+                font-weight: 700;
+                margin: 0.5rem 0;
+            }
+
+            .stats-card p {
+                color: #718096;
+                margin: 0;
+                font-weight: 600;
+            }
+
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+            .section-card.active {
+                display: block;
+                animation: fadeIn 0.5s ease;
+            }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-card h2 {
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .table-custom {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+            .table-custom thead {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+                .table-custom thead th {
+                    font-weight: 600;
+                    border: none;
+                    padding: 1rem;
+                }
+
+            .table-custom tbody tr {
+                transition: background 0.3s ease;
+            }
+
+                .table-custom tbody tr:hover {
+                    background: #f7fafc;
+                }
+
+            .table-custom tbody td {
+                padding: 1rem;
+                vertical-align: middle;
+            }
+
+        .badge-custom {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .badge-success {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .badge-warning {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+
+        .badge-info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-action {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            margin: 0 0.25rem;
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+            .search-box input {
+                width: 100%;
+                padding: 1rem 1rem 1rem 3rem;
+                border: 2px solid #e2e8f0;
+                border-radius: 10px;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+            }
+
+                .search-box input:focus {
+                    outline: none;
+                    border-color: #667eea;
+                    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                }
+
+            .search-box i {
+                position: absolute;
+                left: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #a0aec0;
+            }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #718096;
+        }
+
+            .empty-state i {
+                font-size: 4rem;
+                color: #cbd5e0;
+                margin-bottom: 1rem;
+            }
+    </style>
+}
+
+<div class="dashboard-container">
+    @Html.AntiForgeryToken()
+    <div class="container-fluid">
+        <!-- Admin Navbar -->
+        <div class="admin-navbar">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="fas fa-tachometer-alt me-2"></i>Tableau de Bord Administrateur</h1>
+                    <p class="text-muted mb-0">Bienvenue, @User.Identity.Name</p>
+                </div>
+                <div>
+                    <span class="badge bg-primary fs-6">@DateTime.Now.ToString("dddd, dd MMMM yyyy")</span>
+                </div>
+            </div>
+            <ul class="nav nav-pills" id="dashboardNav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-section="overview">
+                        <i class="fas fa-chart-line me-2"></i>Vue d'ensemble
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="employees">
+                        <i class="fas fa-user-tie me-2"></i>Employés
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="clients">
+                        <i class="fas fa-users me-2"></i>Clients
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="vehicles">
+                        <i class="fas fa-car me-2"></i>Véhicules
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="pending">
+                        <i class="fas fa-clock me-2"></i>En attente
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Overview Section -->
+        <div id="overview-section" class="section-card active">
+            <h2><i class="fas fa-chart-pie me-2"></i>Statistiques Générales</h2>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stats-card employees">
+                        <div class="icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h3>@(ViewBag.TotalEmployees ?? 0)</h3>
+                        <p>Employés</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card clients">
+                        <div class="icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>@(ViewBag.TotalClients ?? 0)</h3>
+                        <p>Clients</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card vehicles">
+                        <div class="icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <h3>@(ViewBag.TotalVehicles ?? 0)</h3>
+                        <p>Véhicules</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card pending">
+                        <div class="icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>@(ViewBag.PendingRequests ?? 0)</h3>
+                        <p>Demandes en attente</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="section-card active">
+                        <h3 class="h5"><i class="fas fa-chart-line me-2"></i>Activité Récente</h3>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <i class="fas fa-plus-circle text-success me-2"></i>
+                                Nouveau client enregistré - <small class="text-muted">Il y a 2h</small>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-car text-info me-2"></i>
+                                Véhicule ajouté - <small class="text-muted">Il y a 5h</small>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-primary me-2"></i>
+                                Location approuvée - <small class="text-muted">Hier</small>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="section-card active">
+                        <h3 class="h5"><i class="fas fa-exclamation-triangle me-2"></i>Actions Requises</h3>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Demandes en attente
+                                <span class="badge badge-warning">@(ViewBag.PendingRequests ?? 0)</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Véhicules en maintenance
+                                <span class="badge badge-info">@(ViewBag.VehiclesInMaintenance ?? 0)</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Retours aujourd'hui
+                                <span class="badge badge-success">@(ViewBag.ReturnsToday ?? 0)</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employees Section -->
+        <div id="employees-section" class="section-card">
+            <h2><i class="fas fa-user-tie me-2"></i>Liste des Employés</h2>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="search-box flex-grow-1 me-3">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="employeeSearch" class="form-control" placeholder="Rechercher un employé...">
+                </div>
+                <a asp-controller="Account" asp-action="Register" class="btn btn-edit">
+                    <i class="fas fa-plus me-2"></i>Nouvel Employé
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Nom Complet</th>
+                            <th>Email</th>
+                            <th>Rôle</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeesTable">
+                        @if (ViewBag.Employees != null && ((IEnumerable<dynamic>)ViewBag.Employees).Any())
+                        {
+                            foreach (var employee in ViewBag.Employees)
+                            {
+                        <tr>
+                            <td>@employee.NomComplet</td>
+                            <td>@employee.Email</td>
+                            <td><span class="badge badge-info">@employee.Role</span></td>
+                            <td><span class="badge badge-success">Actif</span></td>
+                            <td>
+                                <!-- Bouton Voir détails - pointe vers /Admin/Details/{id} -->
+                                <a asp-controller="Admin" asp-action="Details" asp-route-id="@employee.ID" class="btn btn-view btn-sm btn-action">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <!-- Bouton Modifier - pointe vers /Admin/Edit/{id} -->
+                                <a asp-controller="Admin" asp-action="Edit" asp-route-id="@employee.ID" class="btn btn-edit btn-sm btn-action">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <!-- Bouton Supprimer -->
+                                <button class="btn btn-delete btn-sm btn-action" onclick="confirmDeleteEmployee(@employee.ID)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                            }
+                        }
+                        else
+                        {
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <i class="fas fa-user-tie"></i>
+                                    <p>Aucun employé trouvé</p>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Clients Section -->
+        <div id="clients-section" class="section-card">
+            <h2><i class="fas fa-users me-2"></i>Liste des Clients</h2>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="search-box flex-grow-1 me-3">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="clientSearch" class="form-control" placeholder="Rechercher un client...">
+                </div>
+                <a asp-controller="Client" asp-action="Create" class="btn btn-edit">
+                    <i class="fas fa-plus me-2"></i>Nouveau Client
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>CIN</th>
+                            <th>Nom</th>
+                            <th>Email</th>
+                            <th>Téléphone</th>
+                            <th>Permis</th>
+                            <th>Locations</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientsTable">
+                        @if (ViewBag.Clients != null)
+                        {
+                            foreach (var client in ViewBag.Clients)
+                            {
+                        <tr>
+                            <td>@client.CIN</td>
+                            <td>@client.Nom @client.Prenom</td>
+                            <td>@client.Email</td>
+                            <td>@client.Telephone</td>
+                            <td>@client.NumeroPermis</td>
+                            <td><span class="badge badge-info">-</span></td>
+                            <td>
+                                <a asp-controller="Client" asp-action="Details" asp-route-cin="@client.CIN" class="btn btn-view btn-sm btn-action">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a asp-controller="Client" asp-action="Edit" asp-route-cin="@client.CIN" class="btn btn-edit btn-sm btn-action">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn btn-delete btn-sm btn-action" onclick="confirmDeleteClient('@client.CIN')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                            }
+                        }
+                        else
+                        {
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <i class="fas fa-users"></i>
+                                    <p>Aucun client trouvé</p>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Vehicles Section -->
+        <div id="vehicles-section" class="section-card">
+            <h2><i class="fas fa-car me-2"></i>Liste des Véhicules</h2>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="search-box flex-grow-1 me-3">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="vehicleSearch" class="form-control" placeholder="Rechercher un véhicule...">
+                </div>
+                <a asp-controller="Vehicule" asp-action="Create" class="btn btn-edit">
+                    <i class="fas fa-plus me-2"></i>Nouveau Véhicule
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Marque</th>
+                            <th>Modèle</th>
+                            <th>Immatriculation</th>
+                            <th>Catégorie</th>
+                            <th>Prix/Jour</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vehiclesTable">
+                        @if (ViewBag.Vehicles != null)
+                        {
+                            foreach (var vehicle in ViewBag.Vehicles)
+                            {
+                        <tr>
+                            <td>@vehicle.Marque</td>
+                            <td>@vehicle.Modele</td>
+                            <td><strong>@vehicle.Immatriculation</strong></td>
+                            <td>@(vehicle.Categorie?.Nom ?? "N/A")</td>
+                            <td>@vehicle.PrixParJour.ToString("C")</td>
+                            <td>
+                                @if (vehicle.Statut == "Disponible")
+                                        {
+                                <span class="badge badge-success">Disponible</span>
+                                        }
+                                        else
+                                        {
+                                <span class="badge badge-warning">@vehicle.Statut</span>
+                                        }
+                            </td>
+                            <td>
+                                <a asp-controller="Vehicule" asp-action="Details" asp-route-id="@vehicle.Id" class="btn btn-view btn-sm btn-action">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a asp-controller="Vehicule" asp-action="Edit" asp-route-id="@vehicle.Id" class="btn btn-edit btn-sm btn-action">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn btn-delete btn-sm btn-action" onclick="confirmDelete(@vehicle.Id, 'Vehicule')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                            }
+                        }
+                        else
+                        {
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <i class="fas fa-car"></i>
+                                    <p>Aucun véhicule trouvé</p>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pending Requests Section -->
+        <div id="pending-section" class="section-card">
+            <h2><i class="fas fa-clock me-2"></i>Demandes en Attente</h2>
+
+            <div class="search-box mb-3">
+                <i class="fas fa-search"></i>
+                <input type="text" id="pendingSearch" class="form-control" placeholder="Rechercher une demande...">
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Client</th>
+                            <th>Véhicule</th>
+                            <th>Date Début</th>
+                            <th>Date Fin</th>
+                            <th>Prix Total</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingTable">
+                        @if (ViewBag.PendingLocations != null && ((IEnumerable<dynamic>)ViewBag.PendingLocations).Any())
+                        {
+                            foreach (var location in ViewBag.PendingLocations)
+                            {
+                        <tr>
+                            <td>#@location.Id</td>
+                            <td>@(location.Client?.Nom ?? "") @(location.Client?.Prenom ?? "")</td>
+                            <td>@(location.Vehicule?.Marque ?? "") @(location.Vehicule?.Modele ?? "")</td>
+                            <td>@location.DateDebut.ToString("dd/MM/yyyy")</td>
+                            <td>@location.DateFin.ToString("dd/MM/yyyy")</td>
+                            <td>@location.PrixTotal.ToString("C")</td>
+                            <td><span class="badge badge-warning">En attente</span></td>
+                            <td>
+                                <button class="btn btn-success btn-sm btn-action" onclick="approveRequest(@location.Id)">
+                                    <i class="fas fa-check"></i> Approuver
+                                </button>
+                                <button class="btn btn-delete btn-sm btn-action" onclick="rejectRequest(@location.Id)">
+                                    <i class="fas fa-times"></i> Rejeter
+                                </button>
+                            </td>
+                        </tr>
+                            }
+                        }
+                        else
+                        {
+                        <tr>
+                            <td colspan="8">
+                                <div class="empty-state">
+                                    <i class="fas fa-clock"></i>
+                                    <p>Aucune demande en attente</p>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Navigation entre les sections
+            $('#dashboardNav .nav-link').click(function (e) {
+                e.preventDefault();
+
+                // Retirer la classe active de tous les liens
+                $('#dashboardNav .nav-link').removeClass('active');
+                $(this).addClass('active');
+
+                // Cacher toutes les sections
+                $('.section-card').removeClass('active');
+
+                // Afficher la section correspondante
+                const section = $(this).data('section');
+                $(`#${section}-section`).addClass('active');
+            });
+
+            // Recherche pour les employés
+            $('#employeeSearch').on('keyup', function () {
+                const value = $(this).val().toLowerCase();
+                $('#employeesTable tr').filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
+            // Recherche pour les clients
+            $('#clientSearch').on('keyup', function () {
+                const value = $(this).val().toLowerCase();
+                $('#clientsTable tr').filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
+            // Recherche pour les véhicules
+            $('#vehicleSearch').on('keyup', function () {
+                const value = $(this).val().toLowerCase();
+                $('#vehiclesTable tr').filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
+            // Recherche pour les demandes en attente
+            $('#pendingSearch').on('keyup', function () {
+                const value = $(this).val().toLowerCase();
+                $('#pendingTable tr').filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+        });
+
+        // Fonction pour confirmer la suppression d'un employé
+        function confirmDeleteEmployee(id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet employé?')) {
+                // Créer un formulaire pour envoyer la requête POST de suppression
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/Admin/Delete/' + id;
+
+                // Ajouter le token anti-contrefaçon
+                var token = document.createElement('input');
+                token.type = 'hidden';
+                token.name = '__RequestVerificationToken';
+                token.value = $('input[name="__RequestVerificationToken"]').val();
+
+                form.appendChild(token);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        // Fonctions existantes
+        function confirmDelete(id, type) {
+            if (confirm(`Êtes-vous sûr de vouloir supprimer cet élément?`)) {
+                window.location.href = `/${type}/Delete/${id}`;
+            }
+        }
+
+        function confirmDeleteClient(cin) {
+            if (confirm(`Êtes-vous sûr de vouloir supprimer ce client?`)) {
+                window.location.href = `/Client/Delete/${cin}`;
+            }
+        }
+
+        function approveRequest(id) {
+            if (confirm('Approuver cette demande de location?')) {
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/Admin/Approve/' + id;
+
+                var token = document.createElement('input');
+                token.type = 'hidden';
+                token.name = '__RequestVerificationToken';
+                token.value = $('input[name="__RequestVerificationToken"]').val();
+
+                form.appendChild(token);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function rejectRequest(id) {
+            if (confirm('Rejeter cette demande de location?')) {
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/Admin/Reject/' + id;
+
+                var token = document.createElement('input');
+                token.type = 'hidden';
+                token.name = '__RequestVerificationToken';
+                token.value = $('input[name="__RequestVerificationToken"]').val();
+
+                form.appendChild(token);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+}

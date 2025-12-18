@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+	</PropertyGroup>
+
+	<!-- RÉFÉRENCES -->
+	<ItemGroup>
+		<ProjectReference Include="..\CarRental.Core\CarRental.Core.csproj" />
+		<ProjectReference Include="..\CarRental.Data\CarRental.Data.csproj" />
+	</ItemGroup>
+
+	<!-- PACKAGES POUR MySQL -->
+	<ItemGroup>
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0" />
+	</ItemGroup>
+
+</Project>

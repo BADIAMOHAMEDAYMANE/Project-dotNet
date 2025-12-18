@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Accès refusé";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white text-center">
+                    <h3><i class="fas fa-ban me-2"></i>Accès Refusé</h3>
+                </div>
+                <div class="card-body text-center">
+                    <i class="fas fa-shield-alt text-danger" style="font-size: 5rem; opacity: 0.3;"></i>
+                    <h4 class="mt-4">Vous n'avez pas l'autorisation d'accéder à cette page</h4>
+                    <p class="text-muted">
+                        Cette page nécessite des privilèges spécifiques que vous ne possédez pas actuellement.
+                    </p>
+                    <hr />
+                    <div class="d-grid gap-2">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                            <i class="fas fa-home me-2"></i>Retour à l'accueil
+                        </a>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-sign-out-alt me-2"></i>Se déconnecter
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

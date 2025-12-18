@@ -1,0 +1,251 @@
+﻿@{
+    ViewData["Title"] = "Bienvenue";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CarRental</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <style>
+        /* RESET */
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden; /* ❌ pas de scroll horizontal */
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #2c3e50;
+        }
+
+        /* CONTENEUR PRINCIPAL */
+        .page-wrapper {
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-container {
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        /* HEADER */
+        .header-section {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .logo {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,.3);
+        }
+
+        .logo i {
+            font-size: 40px;
+            color: #667eea;
+        }
+
+        .header-section h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* CARTES */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .user-card {
+            background: white;
+            border-radius: 16px;
+            padding: 35px 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,.15);
+            transition: transform .3s ease, box-shadow .3s ease;
+            cursor: pointer;
+        }
+
+        .user-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 18px 45px rgba(0,0,0,.25);
+        }
+
+        .user-card.employee {
+            border-top: 6px solid #3498db;
+        }
+
+        .user-card.client {
+            border-top: 6px solid #2ecc71;
+        }
+
+        .card-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 34px;
+        }
+
+        .employee .card-icon {
+            background: #3498db;
+        }
+
+        .client .card-icon {
+            background: #2ecc71;
+        }
+
+        .card-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .features-list li {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #495057;
+        }
+
+        .features-list i {
+            color: #667eea;
+        }
+
+        .card-button {
+            width: 100%;
+            border: none;
+            padding: 12px;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+            transition: opacity .3s ease;
+        }
+
+        .card-button:hover {
+            opacity: 0.9;
+        }
+
+        /* RESPONSIVE */
+        @@media (max-width: 768px) {
+            .header-section h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <div class="main-container">
+
+            <!-- HEADER -->
+            <div class="header-section">
+                <div class="logo">
+                    <i class="fas fa-car"></i>
+                </div>
+                <h1>Bienvenue sur CarRental</h1>
+                <p>Choisissez votre espace pour continuer</p>
+            </div>
+
+            <!-- CARTES -->
+            <div class="cards-container">
+
+                <!-- EMPLOYÉ -->
+                <div class="user-card employee"
+                     onclick="location.href='@Url.Action("Login","Account")'">
+                    <div class="card-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h2 class="card-title">Espace Employé</h2>
+                    <p class="card-description">
+                        Gérez les véhicules, clients et réservations.
+                    </p>
+                    <ul class="features-list">
+                        <li><i class="fas fa-check-circle"></i> Véhicules</li>
+                        <li><i class="fas fa-check-circle"></i> Clients</li>
+                        <li><i class="fas fa-check-circle"></i> Réservations</li>
+                    </ul>
+                    <button class="card-button">
+                        <i class="fas fa-sign-in-alt me-2"></i> Se connecter
+                    </button>
+                </div>
+
+                <!-- CLIENT -->
+                <div class="user-card client"
+                     onclick="location.href='@Url.Action("Login","ClientAccount")'">
+                    <div class="card-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2 class="card-title">Espace Client</h2>
+                    <p class="card-description">
+                        Réservez et gérez vos locations.
+                    </p>
+                    <ul class="features-list">
+                        <li><i class="fas fa-check-circle"></i> Réservation</li>
+                        <li><i class="fas fa-check-circle"></i> Historique</li>
+                        <li><i class="fas fa-check-circle"></i> Profil</li>
+                    </ul>
+                    <button class="card-button">
+                        <i class="fas fa-sign-in-alt me-2"></i> Se connecter
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

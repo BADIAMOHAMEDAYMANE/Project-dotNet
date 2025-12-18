@@ -1,0 +1,61 @@
+@model CarRental.Core.Models.Employee
+
+@{
+    ViewData["Title"] = "Mon Profil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h1><i class="fas fa-user-circle me-2"></i>Mon Profil</h1>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-user-tie fa-5x text-primary"></i>
+                    </div>
+                    <h3>@Model.NomComplet</h3>
+                    <p class="text-muted">@Model.Email</p>
+                    <div class="mt-3">
+                        <span class="badge bg-primary">@Model.Role</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-info-circle me-2"></i>Informations Personnelles</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">Nom :</dt>
+                        <dd class="col-sm-9">@Model.Nom</dd>
+
+                        <dt class="col-sm-3">Prénom :</dt>
+                        <dd class="col-sm-9">@Model.Prenom</dd>
+
+                        <dt class="col-sm-3">Email :</dt>
+                        <dd class="col-sm-9">@Model.Email</dd>
+
+                        <dt class="col-sm-3">ID Employé :</dt>
+                        <dd class="col-sm-9">@Model.ID</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h4><i class="fas fa-cog me-2"></i>Actions</h4>
+                </div>
+                <div class="card-body">
+                    <a asp-action="Dashboard" class="btn btn-primary">
+                        <i class="fas fa-tachometer-alt me-2"></i>Retour au Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

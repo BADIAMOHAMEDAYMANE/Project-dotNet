@@ -1,0 +1,374 @@
+﻿@model CarRental.Core.Models.Client
+
+@{
+    ViewData["Title"] = "Modifier Client";
+}
+
+@section Styles {
+    <style>
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #dee2e6;
+        }
+
+        .card-header {
+            background-color: #ffc107;
+            color: #212529;
+            font-weight: 600;
+            border-bottom: 2px solid #ffca2c;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-control:focus {
+            border-color: #ffc107;
+            box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #212529;
+        }
+
+            .btn-warning:hover {
+                background-color: #e0a800;
+                border-color: #d39e00;
+                color: #212529;
+            }
+
+        .required-field::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        .readonly-field {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+    </style>
+}
+
+<div class="container mt-4">
+    <!-- En-tête avec bouton retour -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="fas fa-user-edit text-warning me-2"></i>
+            @ViewData["Title"]
+        </h1>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+        </a>
+    </div>
+
+    <!-- Messages d'alerte -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-id-card me-2"></i>
+                        Modification du client : @Model.Nom @Model.Prenom
+                    </h5>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <!-- Champs cachés -->
+                        <input type="hidden" asp-for="CIN" />
+                        <input type="hidden" asp-for="DateInscription" />
+
+                        <!-- Messages de validation -->
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="row">
+                            <!-- Colonne gauche - Informations personnelles -->
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2 mb-3 text-warning">
+                                    <i class="fas fa-user me-2"></i>Informations Personnelles
+                                </h6>
+
+                                <!-- CIN (lecture seule) -->
+                                <div class="mb-3">
+                                    <label class="form-label">CIN</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="fas fa-id-card"></i>
+                                        </span>
+                                        <input type="text" value="@Model.CIN" class="form-control readonly-field" readonly>
+                                    </div>
+                                    <small class="form-text text-muted">Le CIN ne peut pas être modifié</small>
+                                </div>
+
+                                <!-- Nom -->
+                                <div class="mb-3">
+                                    <label asp-for="Nom" class="form-label required-field"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-user"></i>
+                                        </span>
+                                        <input asp-for="Nom" class="form-control" placeholder="Entrez le nom">
+                                    </div>
+                                    <span asp-validation-for="Nom" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Prénom -->
+                                <div class="mb-3">
+                                    <label asp-for="Prenom" class="form-label required-field"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-user"></i>
+                                        </span>
+                                        <input asp-for="Prenom" class="form-control" placeholder="Entrez le prénom">
+                                    </div>
+                                    <span asp-validation-for="Prenom" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Date de naissance -->
+                                <div class="mb-3">
+                                    <label asp-for="DateNaissance" class="form-label required-field"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-birthday-cake"></i>
+                                        </span>
+                                        <input asp-for="DateNaissance" type="date" class="form-control">
+                                    </div>
+                                    <span asp-validation-for="DateNaissance" class="text-danger small"></span>
+                                    <small class="form-text text-muted">Le client doit avoir au moins 18 ans</small>
+                                </div>
+
+                                <!-- Date d'inscription (lecture seule) -->
+                                <div class="mb-3">
+                                    <label class="form-label">Date d'inscription</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="fas fa-calendar-check"></i>
+                                        </span>
+                                        <input type="text" value="@Model.DateInscription.ToString("dd/MM/yyyy à HH:mm")"
+                                               class="form-control readonly-field" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Colonne droite - Coordonnées -->
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2 mb-3 text-warning">
+                                    <i class="fas fa-address-book me-2"></i>Coordonnées
+                                </h6>
+
+                                <!-- Email -->
+                                <div class="mb-3">
+                                    <label asp-for="Email" class="form-label required-field"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-envelope"></i>
+                                        </span>
+                                        <input asp-for="Email" type="email" class="form-control" placeholder="exemple@email.com">
+                                    </div>
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Téléphone -->
+                                <div class="mb-3">
+                                    <label asp-for="Telephone" class="form-label required-field"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-phone"></i>
+                                        </span>
+                                        <input asp-for="Telephone" class="form-control" placeholder="06 12 34 56 78">
+                                    </div>
+                                    <span asp-validation-for="Telephone" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Adresse -->
+                                <div class="mb-3">
+                                    <label asp-for="Adresse" class="form-label required-field"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-home"></i>
+                                        </span>
+                                        <input asp-for="Adresse" class="form-control" placeholder="123 Rue Principale">
+                                    </div>
+                                    <span asp-validation-for="Adresse" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Ville -->
+                                <div class="mb-3">
+                                    <label asp-for="Ville" class="form-label required-field"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-city"></i>
+                                        </span>
+                                        <input asp-for="Ville" class="form-control" placeholder="Casablanca">
+                                    </div>
+                                    <span asp-validation-for="Ville" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Code Postal -->
+                                <div class="mb-3">
+                                    <label asp-for="CodePostal" class="form-label required-field"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-mail-bulk"></i>
+                                        </span>
+                                        <input asp-for="CodePostal" class="form-control" placeholder="20000" maxlength="10">
+                                    </div>
+                                    <span asp-validation-for="CodePostal" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Numéro de permis -->
+                                <div class="mb-3">
+                                    <label asp-for="NumeroPermis" class="form-label required-field"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-id-badge"></i>
+                                        </span>
+                                        <input asp-for="NumeroPermis" class="form-control" placeholder="AB12345678" maxlength="50">
+                                    </div>
+                                    <span asp-validation-for="NumeroPermis" class="text-danger small"></span>
+                                    <small class="form-text text-muted">Numéro de permis de conduire</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <a asp-action="Details" asp-route-cin="@Model.CIN"
+                                           class="btn btn-info">
+                                            <i class="fas fa-eye me-2"></i>Voir détails
+                                        </a>
+
+                                        <a asp-action="Delete" asp-route-cin="@Model.CIN"
+                                           class="btn btn-outline-danger ms-2">
+                                            <i class="fas fa-trash me-2"></i>Supprimer
+                                        </a>
+                                    </div>
+
+                                    <div>
+                                        <a asp-action="Index" class="btn btn-secondary me-2">
+                                            <i class="fas fa-times me-2"></i>Annuler
+                                        </a>
+
+                                        <button type="submit" class="btn btn-warning">
+                                            <i class="fas fa-save me-2"></i>Enregistrer les modifications
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Pied de carte avec informations -->
+                <div class="card-footer bg-light">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Dernière modification : @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                            </small>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <small class="text-muted">
+                                Client créé le : @Model.DateInscription.ToString("dd/MM/yyyy")
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Animation de la carte
+            $('.card').css('opacity', '0').animate({ opacity: 1 }, 600);
+
+            // Validation de l'âge
+            $('#DateNaissance').on('change', function() {
+                var birthDate = new Date($(this).val());
+                var today = new Date();
+                var age = today.getFullYear() - birthDate.getFullYear();
+                var monthDiff = today.getMonth() - birthDate.getMonth();
+
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+
+                if (age < 18) {
+                    $(this).addClass('is-invalid');
+                    $('#age-validation').remove();
+                    $(this).after('<div id="age-validation" class="text-danger small">Le client doit avoir au moins 18 ans</div>');
+                } else {
+                    $(this).removeClass('is-invalid');
+                    $('#age-validation').remove();
+                }
+            });
+
+            // Formatage du téléphone
+            $('#Telephone').on('input', function() {
+                var phone = $(this).val().replace(/\D/g, '');
+                if (phone.length > 0) {
+                    phone = phone.match(/.{1,2}/g).join(' ');
+                }
+                $(this).val(phone);
+            });
+
+            // Confirmation avant soumission
+            $('form').on('submit', function(e) {
+                var birthDate = new Date($('#DateNaissance').val());
+                var today = new Date();
+                var age = today.getFullYear() - birthDate.getFullYear();
+                var monthDiff = today.getMonth() - birthDate.getMonth();
+
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+
+                if (age < 18) {
+                    e.preventDefault();
+                    alert('Le client doit avoir au moins 18 ans !');
+                    return false;
+                }
+
+                if (!confirm('Êtes-vous sûr de vouloir enregistrer les modifications ?')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Focus sur le premier champ
+            $('#Nom').focus();
+        });
+    </script>
+
+    @{
+        // Ajoutez les scripts de validation
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

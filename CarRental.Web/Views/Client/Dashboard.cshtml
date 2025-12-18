@@ -1,0 +1,541 @@
+@{
+    ViewData["Title"] = "Tableau de Bord Client";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <style>
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .client-dashboard {
+            padding: 2rem 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            min-height: 100vh;
+        }
+
+        .client-header {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid #667eea;
+        }
+
+        .client-info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+            .client-info-card:hover {
+                transform: translateY(-5px);
+            }
+
+            .client-info-card .icon {
+                width: 50px;
+                height: 50px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+                color: white;
+                margin-bottom: 1rem;
+            }
+
+            .client-info-card .profile-icon {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .client-info-card .location-icon {
+                background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            }
+
+            .client-info-card .active-icon {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            }
+
+            .client-info-card .history-icon {
+                background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            }
+
+            .client-info-card h3 {
+                font-size: 2rem;
+                font-weight: 700;
+                margin: 0.5rem 0;
+                color: #2d3748;
+            }
+
+            .client-info-card p {
+                color: #718096;
+                margin: 0;
+                font-weight: 600;
+            }
+
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+            .section-card h2 {
+                color: #667eea;
+                font-weight: 700;
+                margin-bottom: 1.5rem;
+                padding-bottom: 1rem;
+                border-bottom: 3px solid #667eea;
+            }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: #2d3748;
+            margin-top: 0.25rem;
+        }
+
+        .table-custom {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+            .table-custom thead {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+        .badge-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .badge-confirmed {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .badge-pending {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+
+        .badge-active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .badge-completed {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-client-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .btn-client-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+                color: white;
+            }
+
+        .btn-edit-profile {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .btn-edit-profile:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+                color: white;
+            }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #718096;
+        }
+
+            .empty-state i {
+                font-size: 4rem;
+                margin-bottom: 1rem;
+                opacity: 0.5;
+            }
+
+        .alert-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+}
+
+<div class="client-dashboard">
+    <div class="container-fluid">
+        <!-- En-tête Client -->
+        <div class="client-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="fas fa-user-circle me-2"></i>Tableau de Bord Client</h1>
+                    @if (ViewBag.Client != null)
+                    {
+                    <p class="text-muted mb-0">Bienvenue, @ViewBag.Client.Nom @ViewBag.Client.Prenom</p>
+                    }
+                    else
+                    {
+                    <p class="text-muted mb-0">Bienvenue, Client</p>
+                    }
+                </div>
+                <div>
+                    <span class="badge bg-primary fs-6">@DateTime.Now.ToString("dddd, dd MMMM yyyy")</span>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="client-info-card">
+                        <div class="icon profile-icon">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        @if (ViewBag.Client != null)
+                        {
+                        <h3>@ViewBag.Client.Nom @ViewBag.Client.Prenom</h3>
+                        <p>Client</p>
+                        <small class="text-muted">Membre depuis @ViewBag.Client.DateInscription.ToString("MMMM yyyy")</small>
+                        }
+                        else
+                        {
+                        <h3>Client</h3>
+                        <p>Non spécifié</p>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="client-info-card">
+                        <div class="icon location-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <h3>@(ViewBag.TotalLocations ?? 0)</h3>
+                        <p>Locations totales</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="client-info-card">
+                        <div class="icon active-icon">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <h3>@(ViewBag.ActiveLocations ?? 0)</h3>
+                        <p>Locations actives</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="client-info-card">
+                        <div class="icon history-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h3>@(ViewBag.CompletedLocations ?? 0)</h3>
+                        <p>Locations terminées</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bouton Nouvelle Demande -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-0">Besoin d'une nouvelle location ?</h3>
+                            <p class="text-muted mb-0">Réservez votre véhicule en quelques clics</p>
+                        </div>
+                        <div>
+                            <a asp-controller="Location" asp-action="CreerLocation" class="btn-client-primary">
+                                <i class="fas fa-plus-circle me-2"></i>Nouvelle Demande
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Mes Informations -->
+        <div class="section-card">
+        
+
+            @if (ViewBag.Client != null)
+            {
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">CIN</div>
+                    <div class="info-value">@ViewBag.Client.CIN</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Nom Complet</div>
+                    <div class="info-value">@ViewBag.Client.Nom @ViewBag.Client.Prenom</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">@ViewBag.Client.Email</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Téléphone</div>
+                    <div class="info-value">@(string.IsNullOrEmpty(ViewBag.Client.Telephone) ? "Non renseigné" : ViewBag.Client.Telephone)</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Date de Naissance</div>
+                    <div class="info-value">@ViewBag.Client.DateNaissance.ToString("dd/MM/yyyy")</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Date d'Inscription</div>
+                    <div class="info-value">@ViewBag.Client.DateInscription.ToString("dd/MM/yyyy")</div>
+                </div>
+                @if (!string.IsNullOrEmpty(ViewBag.Client.Adresse))
+                    {
+                <div class="info-item">
+                    <div class="info-label">Adresse</div>
+                    <div class="info-value">@ViewBag.Client.Adresse</div>
+                </div>
+                    }
+                @if (!string.IsNullOrEmpty(ViewBag.Client.Ville))
+                    {
+                <div class="info-item">
+                    <div class="info-label">Ville</div>
+                    <div class="info-value">@ViewBag.Client.Ville</div>
+                </div>
+                    }
+                @if (!string.IsNullOrEmpty(ViewBag.Client.CodePostal))
+                    {
+                <div class="info-item">
+                    <div class="info-label">Code Postal</div>
+                    <div class="info-value">@ViewBag.Client.CodePostal</div>
+                </div>
+                    }
+                @if (!string.IsNullOrEmpty(ViewBag.Client.NumeroPermis))
+                    {
+                <div class="info-item">
+                    <div class="info-label">Numéro de Permis</div>
+                    <div class="info-value">@ViewBag.Client.NumeroPermis</div>
+                </div>
+                    }
+            </div>
+            }
+            else
+            {
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Aucune information client disponible.
+            </div>
+            }
+        </div>
+
+        <!-- Section Mes Locations -->
+        <div class="section-card">
+            <h2><i class="fas fa-car me-2"></i>Mes Locations</h2>
+
+            @if (ViewBag.ClientLocations == null || !((IEnumerable<dynamic>)ViewBag.ClientLocations).Any())
+            {
+            <div class="empty-state">
+                <i class="fas fa-car"></i>
+                <h4>Aucune location trouvée</h4>
+                <p>Vous n'avez pas encore effectué de location.</p>
+                <a asp-controller="Location" asp-action="Create" class="btn-client-primary mt-3">
+                    <i class="fas fa-plus-circle me-2"></i>Faire ma première demande
+                </a>
+            </div>
+            }
+            else
+            {
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Véhicule</th>
+                            <th>Dates</th>
+                            <th>Durée</th>
+                            <th>Prix</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var location in ViewBag.ClientLocations)
+                            {
+                        <tr>
+                            <td>
+                                @if (location.Vehicule != null)
+                                        {
+                                <strong>@location.Vehicule.Marque @location.Vehicule.Modele</strong>
+                                <br />
+                                <small class="text-muted">@location.Vehicule.Immatriculation</small>
+                                        }
+                                        else
+                                        {
+                                <span class="text-muted">Véhicule inconnu</span>
+                                        }
+                            </td>
+                            <td>
+                                Du @location.DateDebut.ToString("dd/MM/yyyy")<br />
+                                Au @location.DateFin.ToString("dd/MM/yyyy")
+                            </td>
+                            <td>
+                                @{
+                                            var jours = (location.DateFin - location.DateDebut).Days;
+                                            jours = jours < 1 ? 1 : jours;
+                                }
+                                @jours jour(s)
+                            </td>
+                            <td>
+                                @if (location.Vehicule != null)
+                                        {
+                                            var prixTotal = location.Vehicule.PrixParJour * jours;
+                                <strong>@prixTotal.ToString("C")</strong>
+                                        }
+                                        else
+                                        {
+                                <span class="text-muted">N/A</span>
+                                        }
+                            </td>
+                            <td>
+                                @switch (location.Statut)
+                                        {
+                                            case "Confirmée":
+                                <span class="badge-status badge-confirmed">Confirmée</span>
+                                                break;
+                                            case "En attente":
+                                            case "Pending":
+                                <span class="badge-status badge-pending">En attente</span>
+                                                break;
+                                            case "En cours":
+                                <span class="badge-status badge-active">En cours</span>
+                                                break;
+                                            case "Terminée":
+                                            case "Completed":
+                                <span class="badge-status badge-completed">Terminée</span>
+                                                break;
+                                            default:
+                                <span class="badge bg-secondary">@location.Statut</span>
+                                                break;
+                                        }
+                            </td>
+                            <td>
+                                <a href="@Url.Action("Details", "Location", new { id = location.Id })"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye me-1"></i>Détails
+                                </a>
+                            </td>
+                        </tr>
+                            }
+                    </tbody>
+                </table>
+            </div>
+            }
+        </div>
+        @if (ViewBag.HasPendingLocations)
+        {
+        <div class="alert-custom">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-clock fa-2x me-3"></i>
+                <div>
+                    <h5 class="mb-1">Vous avez des demandes en attente</h5>
+                    <p class="mb-0">Vos demandes de location sont en cours de traitement par nos équipes.</p>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Script pour les interactions
+        $(document).ready(function () {
+            // Animation des cartes
+            $('.client-info-card').hover(
+                function () {
+                    $(this).css('box-shadow', '0 12px 40px rgba(0, 0, 0, 0.15)');
+                },
+                function () {
+                    $(this).css('box-shadow', '0 8px 32px rgba(0, 0, 0, 0.1)');
+                }
+            );
+
+           
+            $('form').submit(function (e) {
+                if ($(this).attr('action').includes('Delete')) {
+                    return confirm('Êtes-vous sûr de vouloir supprimer cet élément ?');
+                }
+            });
+
+           
+            function updateTime() {
+                const now = new Date();
+                const options = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                };
+                const formattedDate = now.toLocaleDateString('fr-FR', options);
+                $('.badge.bg-primary.fs-6').text(formattedDate);
+            }
+            setInterval(updateTime, 1000);
+            updateTime();
+        });
+    </script>
+}

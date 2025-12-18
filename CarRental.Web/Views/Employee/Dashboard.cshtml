@@ -1,0 +1,406 @@
+@{
+    ViewData["Title"] = "Tableau de Bord Employé";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@section Styles {
+    <style>
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .employee-dashboard {
+            padding: 2rem 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            min-height: 100vh;
+        }
+
+        .employee-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .employee-info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+            .employee-info-card .icon {
+                width: 50px;
+                height: 50px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+                color: white;
+                margin-bottom: 1rem;
+            }
+
+            .employee-info-card .employee-icon {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .employee-info-card .pending-icon {
+                background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            }
+
+            .employee-info-card .today-icon {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            }
+
+            .employee-info-card h3 {
+                font-size: 2rem;
+                font-weight: 700;
+                margin: 0.5rem 0;
+                color: #2d3748;
+            }
+
+            .employee-info-card p {
+                color: #718096;
+                margin: 0;
+                font-weight: 600;
+            }
+
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+            .section-card h2 {
+                color: #667eea;
+                font-weight: 700;
+                margin-bottom: 1.5rem;
+                padding-bottom: 1rem;
+                border-bottom: 3px solid #667eea;
+            }
+
+        .table-custom {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+            .table-custom thead {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+        .badge-warning {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+
+        .btn-action {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            margin: 0 0.25rem;
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-reject {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+}
+
+<div class="employee-dashboard">
+    <div class="container-fluid">
+        <!-- En-tête Employé -->
+        <div class="employee-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="fas fa-user-tie me-2"></i>Tableau de Bord Employé</h1>
+                    @if (ViewBag.Employee != null)
+                    {
+                    <p class="text-muted mb-0">Bienvenue, @ViewBag.Employee.NomComplet</p>
+                    }
+                    else
+                    {
+                    <p class="text-muted mb-0">Bienvenue, Employé</p>
+                    }
+                </div>
+                <div>
+                    <span class="badge bg-primary fs-6">@DateTime.Now.ToString("dddd, dd MMMM yyyy")</span>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="employee-info-card">
+                        <div class="icon employee-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        @if (ViewBag.Employee != null)
+                        {
+                        <h3>@ViewBag.Employee.NomComplet</h3>
+                        <p>Employé</p>
+                        <small class="text-muted">@ViewBag.Employee.Email</small>
+                        }
+                        else
+                        {
+                        <h3>Employé</h3>
+                        <p>Non spécifié</p>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="employee-info-card">
+                        <div class="icon pending-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>@(ViewBag.TotalPending ?? 0)</h3>
+                        <p>Demandes en attente</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="employee-info-card">
+                        <div class="icon today-icon">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <h3>@(ViewBag.TotalToday ?? 0)</h3>
+                        <p>Locations aujourd'hui</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Demandes en Attente -->
+        <div class="section-card">
+            <h2><i class="fas fa-clock me-2"></i>Demandes en Attente</h2>
+
+            @if (ViewBag.PendingLocations == null || !((IEnumerable<dynamic>)ViewBag.PendingLocations).Any())
+            {
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                Aucune demande en attente pour le moment.
+            </div>
+            }
+            else
+            {
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Client</th>
+                            <th>Véhicule</th>
+                            <th>Dates</th>
+                            <th>Prix estimé</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var location in ViewBag.PendingLocations)
+                            {
+                        <tr>
+                            <td>#@location.Id</td>
+                            <td>
+                                @if (location.Client != null)
+                                        {
+                                <strong>@location.Client.Nom @location.Client.Prenom</strong>
+                                <br />
+                                <small class="text-muted">@location.ClientCIN</small>
+                                        }
+                                        else
+                                        {
+                                <span class="text-muted">@location.ClientCIN</span>
+                                        }
+                            </td>
+                            <td>
+                                @if (location.Vehicule != null)
+                                        {
+                                <strong>@location.Vehicule.Marque @location.Vehicule.Modele</strong>
+                                <br />
+                                <small class="text-muted">@location.Vehicule.Immatriculation</small>
+                                        }
+                                        else
+                                        {
+                                <span class="text-muted">ID: @location.VehiculeId</span>
+                                        }
+                            </td>
+                            <td>
+                                Du @location.DateDebut.ToString("dd/MM/yyyy")<br />
+                                Au @location.DateFin.ToString("dd/MM/yyyy")
+                            </td>
+                            <td>
+                                @if (location.Vehicule != null)
+                                        {
+                                            var jours = (location.DateFin - location.DateDebut).Days;
+                                            jours = jours < 1 ? 1 : jours;
+                                            var prixTotal = location.Vehicule.PrixParJour * jours;
+                                <strong>@prixTotal.ToString("C")</strong>
+                                        }
+                                        else
+                                        {
+                                <span class="text-muted">N/A</span>
+                                        }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    @Html.AntiForgeryToken()
+                                    <form asp-action="ConfirmLocation" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@location.Id" />
+                                        <button type="submit" class="btn btn-confirm btn-sm btn-action"
+                                                onclick="return confirm('Confirmer cette demande ?')">
+                                            <i class="fas fa-check me-1"></i>Confirmer
+                                        </button>
+                                    </form>
+
+                                    <form asp-action="RejectLocation" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@location.Id" />
+                                        <button type="submit" class="btn btn-reject btn-sm btn-action"
+                                                onclick="return confirm('Rejeter cette demande ?')">
+                                            <i class="fas fa-times me-1"></i>Rejeter
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                            }
+                    </tbody>
+                </table>
+            </div>
+            }
+        </div>
+
+        <!-- Section Locations du Jour -->
+        <div class="section-card">
+            <h2><i class="fas fa-calendar-day me-2"></i>Locations du Jour</h2>
+
+            @if (ViewBag.TodayLocations == null || !((IEnumerable<dynamic>)ViewBag.TodayLocations).Any())
+            {
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                Aucune location prévue pour aujourd'hui.
+            </div>
+            }
+            else
+            {
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Véhicule</th>
+                            <th>Heure Début</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var location in ViewBag.TodayLocations)
+                            {
+                        <tr>
+                            <td>
+                                @if (location.Client != null)
+                                        {
+                                @location.Client.Nom  @location.Client.Prenom
+                                        }
+                                        else
+                                        {
+                                <span class="text-muted">Client inconnu</span>
+                                        }
+                            </td>
+                            <td>
+                                @if (location.Vehicule != null)
+                                        {
+                                @location.Vehicule.Marque  @location.Vehicule.Modele
+                                        }
+                                        else
+                                        {
+                                <span class="text-muted">Véhicule inconnu</span>
+                                        }
+                            </td>
+                            <td>@location.DateDebut.ToString("HH:mm")</td>
+                            <td>
+                                @switch (location.Statut)
+                                        {
+                                            case "Confirmée":
+                                <span class="badge bg-success">Confirmée</span>
+                                                break;
+                                            case "En cours":
+                                <span class="badge bg-primary">En cours</span>
+                                                break;
+                                            default:
+                                <span class="badge bg-secondary">@location.Statut</span>
+                                                break;
+                                        }
+                            </td>
+                            <td>
+                                @if (location.Statut == "Confirmée")
+                                        {
+                                <form asp-action="StartLocation" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@location.Id" />
+                                    <button type="submit" class="btn btn-confirm btn-sm btn-action"
+                                            onclick="return confirm('Démarrer cette location ?')">
+                                        <i class="fas fa-play me-1"></i>Démarrer
+                                    </button>
+                                </form>
+                                        }
+                                        else if (location.Statut == "En cours")
+                                        {
+                                <form asp-action="CompleteLocation" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@location.Id" />
+                                    <button type="submit" class="btn btn-reject btn-sm btn-action"
+                                            onclick="return confirm('Terminer cette location ?')">
+                                        <i class="fas fa-stop me-1"></i>Terminer
+                                    </button>
+                                </form>
+                                        }
+                            </td>
+                        </tr>
+                            }
+                    </tbody>
+                </table>
+            </div>
+            }
+        </div>
+
+        <!-- Liens rapides -->
+        <div class="section-card">
+            <h2><i class="fas fa-rocket me-2"></i>Actions Rapides</h2>
+                <div class="col-md-4">
+                    <a asp-controller="Vehicule" asp-action="Index" class="btn btn-confirm btn-lg w-100 mb-3">
+                        <i class="fas fa-car me-2"></i>Voir les véhicules
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a asp-controller="Client" asp-action="Index" class="btn btn-confirm btn-lg w-100 mb-3">
+                        <i class="fas fa-users me-2"></i>Voir les clients
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

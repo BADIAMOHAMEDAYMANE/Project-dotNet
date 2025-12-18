@@ -1,0 +1,191 @@
+@model CarRental.Core.Models.Employee
+
+@{
+    ViewData["Title"] = "Modifier Employé";
+}
+
+@section Styles {
+    <style>
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #dee2e6;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            border-bottom: none;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+
+            .btn-primary:hover {
+                background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            }
+
+        .required-field::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        .readonly-field {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+            .role-badge.admin {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                color: white;
+            }
+
+            .role-badge.employe {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+            .role-badge.basic {
+                background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+                color: #333;
+            }
+    </style>
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="fas fa-user-edit me-2" style="color: #667eea;"></i>
+            @ViewData["Title"]
+        </h1>
+        <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Retour au tableau de bord
+        </a>
+    </div>
+
+    <!-- SUPPRIMEZ LE TRIPLE BACKTICK ICI -->
+    @if (TempData["Success"] != null)
+    {
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-tie me-2"></i>
+                        Modification de l'employé : @Model.NomComplet
+                    </h5>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="ID" />
+                        <input type="hidden" asp-for="PasswordHash" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2 mb-3" style="color: #667eea;">
+                                    <i class="fas fa-user me-2"></i>Informations Personnelles
+                                </h6>
+
+                                <div class="mb-3">
+                                    <label class="form-label">ID Employé</label>
+                                    <input type="text" value="@Model.ID" class="form-control readonly-field" readonly />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Nom" class="form-label required-field"></label>
+                                    <input asp-for="Nom" class="form-control" />
+                                    <span asp-validation-for="Nom" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Prenom" class="form-label required-field"></label>
+                                    <input asp-for="Prenom" class="form-control" />
+                                    <span asp-validation-for="Prenom" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Email" class="form-label required-field"></label>
+                                    <input asp-for="Email" type="email" class="form-control" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2 mb-3" style="color: #667eea;">
+                                    <i class="fas fa-id-badge me-2"></i>Rôle et Permissions
+                                </h6>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Rôle Actuel</label>
+                                    <input type="text" value="@Model.Role" class="form-control readonly-field" readonly />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Role" class="form-label required-field">Nouveau Rôle</label>
+                                    <select asp-for="Role" class="form-select">
+                                        <option value="Admin">Administrateur</option>
+                                        <option value="Employe">Employé</option>
+                                        <option value="Basic">Utilisateur Basic</option>
+                                    </select>
+                                    <span asp-validation-for="Role" class="text-danger"></span>
+                                </div>
+
+                                <div class="alert alert-info">
+                                    <i class="fas fa-lock me-2"></i>
+                                    Le mot de passe actuel est conservé.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 d-flex justify-content-end">
+                            <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-secondary me-2">Annuler</a>
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+</div>

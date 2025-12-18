@@ -1,0 +1,445 @@
+﻿@model CarRental.Core.Models.Vehicule
+
+@{
+    ViewData["Title"] = "Supprimer le Véhicule";
+
+    // Calculs pour l'affichage
+    var ageVehicule = Model.Annee.HasValue ? (DateTime.Now.Year - Model.Annee.Value) : (int?)null;
+    var joursDepuisEntretien = Model.DateDernierEntretien.HasValue ?
+        (DateTime.Now - Model.DateDernierEntretien.Value).Days : (int?)null;
+}
+
+@section Styles {
+    <style>
+        .warning-card {
+            border-left: 5px solid #dc3545;
+            border-radius: 8px;
+        }
+
+        .vehicule-info-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        .info-row {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+            .info-row:last-child {
+                border-bottom: none;
+            }
+
+        .warning-icon {
+            color: #dc3545;
+            font-size: 4rem;
+        }
+
+        .vehicule-image {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+
+            .vehicule-image i {
+                font-size: 5rem;
+            }
+    </style>
+}
+
+<div class="container mt-4">
+    <!-- Bouton retour -->
+    <div class="mb-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <!-- Carte d'avertissement -->
+            <div class="card warning-card mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="me-4">
+                            <i class="fas fa-exclamation-triangle warning-icon"></i>
+                        </div>
+                        <div>
+                            <h3 class="card-title text-danger mb-3">
+                                <i class="fas fa-trash-alt me-2"></i>Confirmation de suppression
+                            </h3>
+                            <p class="card-text lead">
+                                Vous êtes sur le point de supprimer définitivement le véhicule
+                                <strong>@Model.Marque @Model.Modele</strong>
+                                (<code>@Model.Immatriculation</code>).
+                            </p>
+                            <p class="card-text text-danger mb-0">
+                                <i class="fas fa-exclamation-circle me-1"></i>
+                                Cette action est irréversible et supprimera toutes les données associées à ce véhicule.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Colonne gauche - Image/Statut -->
+                <div class="col-md-4 mb-4">
+                    <div class="vehicule-image mb-3">
+                        <i class="fas fa-car"></i>
+                        <h4 class="mt-3">@Model.Marque</h4>
+                        <p class="mb-0">@Model.Modele</p>
+                    </div>
+
+                    <!-- Statut du véhicule -->
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="fas fa-info-circle me-2"></i>Statut
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            @{
+                                var statusClass = Model.Statut switch
+                                {
+                                    "Disponible" => "bg-success",
+                                    "Loué" => "bg-warning",
+                                    "En maintenance" => "bg-info",
+                                    "Indisponible" => "bg-danger",
+                                    _ => "bg-secondary"
+                                };
+                            }
+                            <div class="text-center mb-3">
+                                <span class="badge @statusClass" style="font-size: 1.2rem; padding: 10px 20px;">
+                                    <i class="fas fa-circle me-1"></i>@Model.Statut
+                                </span>
+                            </div>
+
+                            <hr />
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span><i class="fas fa-calendar me-2 text-muted"></i>ID Véhicule :</span>
+                                <strong>@Model.Id</strong>
+                            </div>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span><i class="fas fa-toggle-on me-2 text-muted"></i>Actif :</span>
+                                @if (Model.EstActif)
+                                {
+                                    <span class="badge bg-success">Oui</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Non</span>
+                                }
+                            </div>
+
+                            @if (Model.Categorie != null)
+                            {
+                                <div class="d-flex justify-content-between">
+                                    <span><i class="fas fa-tags me-2 text-muted"></i>Catégorie :</span>
+                                    <span class="badge bg-info">@Model.Categorie.Nom</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Colonne droite - Informations détaillées -->
+                <div class="col-md-8">
+                    <!-- Informations du véhicule -->
+                    <div class="card vehicule-info-card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-car me-2"></i>Informations du véhicule à supprimer
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-row">
+                                        <strong class="me-2"><i class="fas fa-car text-primary me-1"></i>Marque :</strong>
+                                        <span class="text-primary">@Model.Marque</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <strong class="me-2"><i class="fas fa-car-side text-primary me-1"></i>Modèle :</strong>
+                                        @Model.Modele
+                                    </div>
+                                    <div class="info-row">
+                                        <strong class="me-2"><i class="fas fa-id-card text-primary me-1"></i>Immatriculation :</strong>
+                                        <code class="bg-light p-1 rounded">@Model.Immatriculation</code>
+                                    </div>
+                                    <div class="info-row">
+                                        <strong class="me-2"><i class="fas fa-calendar text-primary me-1"></i>Année :</strong>
+                                        @if (Model.Annee.HasValue)
+                                        {
+                                            @Model.Annee.Value
+                                            <span class="badge bg-info ms-2">@ageVehicule ans</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Non spécifiée</span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-row">
+                                        <strong class="me-2"><i class="fas fa-palette text-primary me-1"></i>Couleur :</strong>
+                                        @if (!string.IsNullOrEmpty(Model.Couleur))
+                                        {
+                                            <span class="badge bg-secondary">@Model.Couleur</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Non spécifiée</span>
+                                        }
+                                    </div>
+                                    <div class="info-row">
+                                        <strong class="me-2"><i class="fas fa-road text-primary me-1"></i>Kilométrage :</strong>
+                                        @Model.Kilometrage.ToString("N0") <text>km</text>
+                                    </div>
+                                    <div class="info-row">
+                                        <strong class="me-2"><i class="fas fa-users text-primary me-1"></i>Places :</strong>
+                                        @Model.NombrePlaces places
+                                    </div>
+                                    <div class="info-row">
+                                        <strong class="me-2"><i class="fas fa-tag text-primary me-1"></i>Prix d'achat :</strong>
+                                        @if (Model.PrixAchat.HasValue)
+                                        {
+                                            @Model.PrixAchat.Value.ToString("N2") <text>MAD</text>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Non spécifié</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Détails supplémentaires -->
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="alert alert-warning">
+                                        <div class="d-flex">
+                                            <i class="fas fa-wrench fa-2x me-3 align-self-start"></i>
+                                            <div>
+                                                <h6 class="alert-heading">Informations d'entretien</h6>
+                                                @if (Model.DateDernierEntretien.HasValue)
+                                                {
+                                                    <p class="mb-1">
+                                                        <strong>Dernier entretien :</strong>
+                                                        @Model.DateDernierEntretien.Value.ToString("dd/MM/yyyy")
+                                                        @if (joursDepuisEntretien.HasValue)
+                                                        {
+                                                            var badgeClass = joursDepuisEntretien.Value > 180 ? "bg-danger" :
+                                                            joursDepuisEntretien.Value > 90 ? "bg-warning" : "bg-success";
+                                                            <span class="badge @badgeClass ms-2">
+                                                                Il y a @joursDepuisEntretien.Value jours
+                                                            </span>
+                                                        }
+                                                    </p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="mb-1">
+                                                        <strong>Dernier entretien :</strong>
+                                                        <span class="text-muted">Aucun entretien enregistré</span>
+                                                    </p>
+                                                }
+
+                                                @if (Model.KilometrageDernierEntretien.HasValue)
+                                                {
+                                                    <p class="mb-0">
+                                                        <strong>Kilométrage entretien :</strong>
+                                                        @Model.KilometrageDernierEntretien.Value.ToString("N0") <text>km</text>
+                                                    </p>
+                                                }
+
+                                                @if (Model.DateAchat.HasValue)
+                                                {
+                                                    <p class="mb-0 mt-2">
+                                                        <strong>Date d'achat :</strong>
+                                                        @Model.DateAchat.Value.ToString("dd/MM/yyyy")
+                                                    </p>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Catégorie -->
+                            @if (Model.Categorie != null)
+                            {
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <div class="alert alert-info mb-0">
+                                            <div class="d-flex">
+                                                <i class="fas fa-tags fa-2x me-3 align-self-start"></i>
+                                                <div>
+                                                    <h6 class="alert-heading">Catégorie</h6>
+                                                    <p class="mb-1">
+                                                        <strong>Nom :</strong> @Model.Categorie.Nom
+                                                    </p>
+                                                    @if (!string.IsNullOrEmpty(Model.Categorie.Description))
+                                                    {
+                                                        <p class="mb-0">
+                                                            <strong>Description :</strong> @Model.Categorie.Description
+                                                        </p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Avertissement important -->
+                    <div class="alert alert-danger">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-ban fa-2x me-3"></i>
+                            <div>
+                                <h5 class="alert-heading">Attention !</h5>
+                                <p class="mb-0">
+                                    Si ce véhicule a des réservations en cours ou dans l'historique, la suppression
+                                    pourrait affecter l'intégrité des données. Vérifiez qu'aucune réservation n'est
+                                    associée à ce véhicule avant de procéder à la suppression.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulaire de suppression -->
+                    <div class="card">
+                        <div class="card-body">
+                            <form asp-action="Delete" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@Model.Id" />
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                                            <label class="form-check-label text-danger" for="confirmDelete">
+                                                <strong>Je confirme vouloir supprimer ce véhicule</strong>
+                                            </label>
+                                            <div class="form-text">
+                                                Cochez cette case pour confirmer la suppression
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="confirmIrreversible">
+                                            <label class="form-check-label text-danger" for="confirmIrreversible">
+                                                <strong>Je comprends que cette action est irréversible</strong>
+                                            </label>
+                                            <div class="form-text">
+                                                Cochez cette case pour confirmer votre compréhension
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between mt-4">
+                                    <div>
+                                        <a asp-action="Details" asp-route-id="@Model.Id"
+                                           class="btn btn-info">
+                                            <i class="fas fa-eye me-2"></i>Voir les détails
+                                        </a>
+
+                                        <a asp-action="Edit" asp-route-id="@Model.Id"
+                                           class="btn btn-warning ms-2">
+                                            <i class="fas fa-edit me-2"></i>Modifier à la place
+                                        </a>
+                                    </div>
+
+                                    <div>
+                                        <a asp-action="Index" class="btn btn-secondary me-2">
+                                            <i class="fas fa-times me-2"></i>Annuler
+                                        </a>
+
+                                        <button type="submit" class="btn btn-danger"
+                                                id="deleteButton" disabled>
+                                            <i class="fas fa-trash-alt me-2"></i>Supprimer définitivement
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Désactiver le bouton de suppression tant que les deux cases ne sont pas cochées
+            function updateDeleteButton() {
+                var confirmDelete = $('#confirmDelete').is(':checked');
+                var confirmIrreversible = $('#confirmIrreversible').is(':checked');
+                $('#deleteButton').prop('disabled', !(confirmDelete && confirmIrreversible));
+            }
+
+            $('#confirmDelete, #confirmIrreversible').on('change', function() {
+                updateDeleteButton();
+            });
+
+            // Animation
+            $('.card').css('opacity', '0').animate({ opacity: 1 }, 500);
+
+            // Confirmation supplémentaire
+            $('#deleteButton').on('click', function(e) {
+                var vehicule = '@Model.Marque @Model.Modele (@Model.Immatriculation)';
+                if (!confirm('Êtes-vous ABSOLUMENT sûr de vouloir supprimer le véhicule ' + vehicule + ' ?')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Message d'avertissement au survol du bouton
+            $('#deleteButton').hover(
+                function() {
+                    $(this).html('<i class="fas fa-exclamation-triangle me-2"></i>SUPPRIMER DÉFINITIVEMENT');
+                    $(this).addClass('btn-lg');
+                },
+                function() {
+                    $(this).html('<i class="fas fa-trash-alt me-2"></i>Supprimer définitivement');
+                    $(this).removeClass('btn-lg');
+                }
+            );
+
+            // Avertissement si le véhicule est actuellement loué
+            @if (Model.Statut == "Loué")
+            {
+                    <text>
+                    $('.warning-card').before(
+                        '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
+                        '<i class="fas fa-exclamation-triangle me-2"></i>' +
+                        '<strong>Attention !</strong> Ce véhicule est actuellement <strong>Loué</strong>. ' +
+                        'Assurez-vous qu\'aucune réservation active n\'est associée avant de supprimer.' +
+                        '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                        '</div>'
+                    );
+                    </text>
+            }
+
+            // Avertissement spécial si l'entretien est en retard
+            @if (joursDepuisEntretien.HasValue && joursDepuisEntretien.Value > 180)
+            {
+                    <text>
+                    console.log('Note: Ce véhicule nécessitait un entretien avant suppression.');
+                    </text>
+            }
+        });
+    </script>
+}

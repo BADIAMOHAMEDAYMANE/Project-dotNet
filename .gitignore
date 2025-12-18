@@ -1,0 +1,13 @@
+# Visual Studio
+.vs/
+bin/
+obj/
+
+# JetBrains (si tu utilises Rider / IntelliJ)
+.idea/
+
+# Fichiers système
+*.user
+*.suo
+*.cache
+*.log

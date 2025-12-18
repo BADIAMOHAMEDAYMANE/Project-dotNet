@@ -1,0 +1,150 @@
+@model CarRental.Core.Models.Facture
+
+@{
+    ViewData["Title"] = "Détails de la facture";
+}
+
+<div class="invoice-container">
+
+    <!-- HEADER -->
+    <div class="invoice-header">
+        <div>
+            <div class="invoice-title">
+                Facture #@Model.Id
+            </div>
+            <div class="text-muted">
+                Date : @Model.DateFacture.ToString("dd/MM/yyyy")
+            </div>
+        </div>
+
+        <div class="invoice-meta">
+            <strong>CarRental</strong><br />
+            Location de véhicules
+        </div>
+    </div>
+
+    <!-- CLIENT -->
+    <div class="invoice-section">
+        <h5>Informations Client</h5>
+        <p class="mb-1"><strong>Nom :</strong> @Model.Location?.Client?.Nom</p>
+        <p class="mb-1"><strong>Email :</strong> @Model.Location?.Client?.Email</p>
+    </div>
+
+    <!-- LOCATION -->
+    <div class="invoice-section">
+        <h5>Informations Location</h5>
+        <p class="mb-1"><strong>Véhicule :</strong> @Model.Location?.Vehicule?.Marque @Model.Location?.Vehicule?.Modele</p>
+        <p class="mb-1"><strong>Date début :</strong> @Model.Location?.DateDebut.ToString("dd/MM/yyyy")</p>
+        <p class="mb-1"><strong>Date fin :</strong> @Model.Location?.DateFin.ToString("dd/MM/yyyy")</p>
+    </div>
+
+    <!-- DÉTAILS -->
+    <div class="invoice-section">
+        <h5>Détails de la Facture</h5>
+
+        <table class="table table-bordered invoice-table">
+            <thead>
+            <tr>
+                <th>Description</th>
+                <th class="text-end">Montant (MAD)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Location du véhicule</td>
+                <td class="text-end">@Model.MontantTotal.ToString("N2")</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="total-box">
+            Total : @Model.MontantTotal.ToString("N2") MAD
+        </div>
+    </div>
+
+    <!-- QR CODE -->
+    <div class="qr-box">
+        <h5>QR Code de la Facture</h5>
+
+        <img src="@Url.Action("QrCode", "Facture", new { id = Model.Id })"
+             alt="QR Code Facture"
+             width="180" />
+
+        <p>Scannez ce QR Code pour consulter cette facture</p>
+    </div>
+
+</div>
+
+@section Styles {
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+
+        .invoice-container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .invoice-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .invoice-meta {
+            text-align: right;
+            font-size: 0.95rem;
+            color: #6c757d;
+        }
+
+        .invoice-section {
+            margin-bottom: 30px;
+        }
+
+        .invoice-section h5 {
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #34495e;
+        }
+
+        .invoice-table th {
+            background-color: #f1f3f6;
+        }
+
+        .total-box {
+            text-align: right;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .qr-box {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .qr-box img {
+            border: 6px solid #f1f3f6;
+            padding: 10px;
+            border-radius: 12px;
+            background: white;
+        }
+
+        .qr-box p {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+    </style>
+}

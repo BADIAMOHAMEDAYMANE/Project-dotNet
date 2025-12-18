@@ -1,0 +1,342 @@
+@model CarRental.Core.Models.Client
+
+@{
+    ViewData["Title"] = "Mon Profil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .profile-container {
+            padding: 2rem 0;
+        }
+
+        .profile-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .profile-name {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-role {
+            text-align: center;
+            color: #718096;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-member-since {
+            text-align: center;
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+            .profile-card h2 {
+                color: #667eea;
+                font-weight: 700;
+                margin-bottom: 1.5rem;
+                padding-bottom: 1rem;
+                border-bottom: 3px solid #667eea;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+            .info-item:hover {
+                transform: translateX(5px);
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+            }
+
+        .info-label {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-value {
+            font-size: 1.15rem;
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+            .info-value.empty {
+                color: #a0aec0;
+                font-style: italic;
+            }
+
+        .btn-back {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+            .btn-back:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+                color: white;
+            }
+
+        .alert-info-custom {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+            .alert-info-custom i {
+                font-size: 1.5rem;
+            }
+    </style>
+}
+
+<div class="profile-container">
+    <div class="container">
+        <!-- En-tête du profil -->
+        <div class="profile-header">
+            <a asp-controller="Client" asp-action="Dashboard" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Retour au tableau de bord
+            </a>
+
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+
+            <h1 class="profile-name">@Model.Nom @Model.Prenom</h1>
+            <p class="profile-role">
+                <i class="fas fa-id-card me-2"></i>Client
+            </p>
+            <p class="profile-member-since">
+                <i class="fas fa-calendar-alt me-2"></i>
+                Membre depuis @Model.DateInscription.ToString("MMMM yyyy")
+            </p>
+        </div>
+
+        <!-- Message informatif -->
+        <div class="alert-info-custom">
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <strong>Consultation du profil</strong>
+                <p class="mb-0">Vous consultez vos informations personnelles en mode lecture seule.</p>
+            </div>
+        </div>
+
+        <!-- Informations personnelles -->
+        <div class="profile-card">
+            <h2>
+                <i class="fas fa-user-circle"></i>
+                Informations Personnelles
+            </h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-id-card"></i>
+                        CIN
+                    </div>
+                    <div class="info-value">@Model.CIN</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-user"></i>
+                        Nom Complet
+                    </div>
+                    <div class="info-value">@Model.Nom @Model.Prenom</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-birthday-cake"></i>
+                        Date de Naissance
+                    </div>
+                    <div class="info-value">@Model.DateNaissance.ToString("dd/MM/yyyy")</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-calendar-check"></i>
+                        Date d'Inscription
+                    </div>
+                    <div class="info-value">@Model.DateInscription.ToString("dd/MM/yyyy")</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coordonnées -->
+        <div class="profile-card">
+            <h2>
+                <i class="fas fa-address-book"></i>
+                Coordonnées
+            </h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-envelope"></i>
+                        Email
+                    </div>
+                    <div class="info-value">@Model.Email</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-phone"></i>
+                        Téléphone
+                    </div>
+                    <div class="info-value @(string.IsNullOrEmpty(Model.Telephone) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Telephone) ? "Non renseigné" : Model.Telephone)
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Adresse))
+                {
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Adresse
+                    </div>
+                    <div class="info-value">@Model.Adresse</div>
+                </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Ville))
+                {
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-city"></i>
+                        Ville
+                    </div>
+                    <div class="info-value">@Model.Ville</div>
+                </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.CodePostal))
+                {
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-mail-bulk"></i>
+                        Code Postal
+                    </div>
+                    <div class="info-value">@Model.CodePostal</div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- Informations de conduite -->
+        @if (!string.IsNullOrEmpty(Model.NumeroPermis))
+        {
+        <div class="profile-card">
+            <h2>
+                <i class="fas fa-id-badge"></i>
+                Informations de Conduite
+            </h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-id-badge"></i>
+                        Numéro de Permis
+                    </div>
+                    <div class="info-value">@Model.NumeroPermis</div>
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- Bouton retour en bas -->
+        <div class="text-center mt-4">
+            <a asp-controller="Client" asp-action="Dashboard" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Retour au tableau de bord
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Animation au survol des cartes d'information
+            $('.info-item').hover(
+                function () {
+                    $(this).css('border-left-width', '6px');
+                },
+                function () {
+                    $(this).css('border-left-width', '4px');
+                }
+            );
+
+            // Log pour debug
+            console.log('Profile page loaded for:', '@Model.Nom @Model.Prenom');
+        });
+    </script>
+}

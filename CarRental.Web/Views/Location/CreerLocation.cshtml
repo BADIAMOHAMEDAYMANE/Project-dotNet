@@ -1,0 +1,193 @@
+@model CarRental.Core.Models.Location
+
+@{
+    ViewData["Title"] = "Demande de Location";
+    var minDate = DateTime.Today.ToString("yyyy-MM-dd");
+}
+
+<style>
+    .vehicle-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        border: 2px solid transparent;
+    }
+
+        .vehicle-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .vehicle-card.selected {
+            border-color: #198754;
+            background-color: #f0fff6;
+        }
+
+        .vehicle-card i {
+            transition: transform 0.3s ease;
+        }
+
+        .vehicle-card:hover i {
+            transform: scale(1.1);
+        }
+
+    .badge {
+        margin: 2px;
+    }
+
+    .date-box {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .section-title {
+        font-weight: 600;
+        color: #495057;
+        border-left: 5px solid #198754;
+        padding-left: 10px;
+        margin-bottom: 15px;
+    }
+
+    #btnSubmit {
+        font-size: 1.1rem;
+        padding: 12px;
+        border-radius: 10px;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm p-4">
+        <h2 class="mb-4 text-success">
+            <i class="fas fa-file-contract me-2"></i>@ViewData["Title"]
+        </h2>
+
+        @if (TempData["Error"] != null)
+        {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <form asp-action="CreerLocation" method="post" id="locationForm">
+            @Html.AntiForgeryToken()
+
+            <!-- ================= DATES ================= -->
+            <div class="section-title">Période de location</div>
+
+            <div class="row date-box mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Date début</label>
+                    <input asp-for="DateDebut" type="date" class="form-control"
+                           id="dateDebut" min="@minDate" required />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Date fin</label>
+                    <input asp-for="DateFin" type="date" class="form-control"
+                           id="dateFin" min="@minDate" required />
+                </div>
+            </div>
+
+            <!-- ================= VEHICULES ================= -->
+            <div class="section-title mt-4">
+                <i class="fas fa-car me-2"></i>Choisir un véhicule
+            </div>
+
+            <div class="row" id="vehicleList">
+                @foreach (var vehicule in (IEnumerable<CarRental.Core.Models.Vehicule>)ViewBag.Vehicules)
+                {
+                <div class="col-md-4 mb-4 vehicle-item">
+                    <div class="card vehicle-card h-100"
+                         onclick="selectVehicle(
+                                this,
+                                @vehicule.Id,
+                                '@vehicule.Marque',
+                                '@vehicule.Modele',
+                                @vehicule.PrixParJour
+                             )">
+
+                        <div class="card-body text-center">
+                            <i class="fas fa-car fa-3x text-success mb-3"></i>
+
+                            <h5 class="fw-bold">
+                                @vehicule.Marque @vehicule.Modele
+                            </h5>
+
+                            <div class="mb-2">
+                                <span class="badge bg-secondary">
+                                    @vehicule.Immatriculation
+                                </span>
+
+                                <span class="badge bg-info">
+                                    @(vehicule.Categorie?.Nom ?? "Non catégorisé")
+                                </span>
+                            </div>
+
+                            <h4 class="text-success mt-2">
+                                @vehicule.PrixParJour.ToString("N2") € / jour
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+
+            <!-- ================= HIDDEN INPUTS ================= -->
+            <input type="hidden" asp-for="VehiculeId" id="vehiculeIdInput" />
+            <input type="hidden" asp-for="ClientCIN" value="@ViewBag.CurrentUserCIN" />
+
+            <!-- ================= COMMENTAIRES ================= -->
+            <div class="section-title mt-4">Commentaires</div>
+
+            <div class="mb-4">
+                <textarea asp-for="Commentaires" class="form-control"
+                          rows="3"
+                          placeholder="Ajoutez un commentaire si nécessaire..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100" id="btnSubmit">
+                <i class="fas fa-paper-plane me-2"></i>Envoyer la demande
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let selectedVehicleId = null;
+        let selectedPrice = 0;
+
+        function selectVehicle(card, id, marque, modele, prix) {
+
+            document.querySelectorAll('.vehicle-card')
+                .forEach(c => c.classList.remove('selected'));
+
+            card.classList.add('selected');
+
+            selectedVehicleId = id;
+            selectedPrice = prix;
+
+            document.getElementById('vehiculeIdInput').value = id;
+        }
+
+        document.getElementById('locationForm').addEventListener('submit', function (e) {
+
+            const dateDebut = new Date(document.getElementById('dateDebut').value);
+            const dateFin = new Date(document.getElementById('dateFin').value);
+
+            if (!selectedVehicleId) {
+                e.preventDefault();
+                alert("Veuillez sélectionner un véhicule");
+                return;
+            }
+
+            if (dateFin <= dateDebut) {
+                e.preventDefault();
+                alert("La date de fin doit être postérieure à la date de début");
+                return;
+            }
+
+            document.getElementById('btnSubmit').disabled = true;
+        });
+    </script>
+}

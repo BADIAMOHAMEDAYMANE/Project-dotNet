@@ -1,0 +1,330 @@
+﻿@model CarRental.Core.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Connexion";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CarRental</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/css/bootstrap.min.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            max-width: 450px;
+            width: 100%;
+            margin: 20px;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+            .login-header h2 {
+                margin: 0;
+                font-weight: 600;
+                font-size: 28px;
+            }
+
+            .login-header p {
+                margin: 10px 0 0;
+                opacity: 0.9;
+                font-size: 14px;
+            }
+
+        .login-body {
+            padding: 40px 30px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+            .form-control:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            }
+
+        .input-group-prepend .input-group-text {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+        }
+
+        .input-group .form-control {
+            border-left: none;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .custom-checkbox {
+            margin: 20px 0;
+        }
+
+            .custom-checkbox label {
+                font-weight: normal;
+                color: #666;
+                cursor: pointer;
+            }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            }
+
+        .btn-outline-secondary {
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 8px;
+            padding: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+            .btn-outline-secondary:hover {
+                background: #667eea;
+                color: white;
+                border-color: #667eea;
+            }
+
+        .btn-link {
+            color: #667eea;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+            .btn-link:hover {
+                color: #764ba2;
+                text-decoration: none;
+                transform: translateX(-3px);
+            }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+
+            .divider::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 50%;
+                width: 100%;
+                height: 1px;
+                background: #e0e0e0;
+            }
+
+            .divider span {
+                background: white;
+                padding: 0 15px;
+                position: relative;
+                color: #999;
+                font-size: 14px;
+            }
+
+        .alert {
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .login-footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+        }
+
+            .login-footer i {
+                color: #28a745;
+                margin-right: 8px;
+            }
+
+            .login-footer p {
+                margin: 0;
+                color: #666;
+                font-size: 13px;
+            }
+
+        .copyright {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .home-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @@media (max-width: 576px) {
+            .login-container {
+                margin: 10px;
+            }
+
+            .login-header {
+                padding: 30px 20px;
+            }
+
+            .login-body {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="login-container">
+            <div class="login-header">
+                <h2><i class="fas fa-car"></i> CarRental</h2>
+                <p>Système de Gestion</p>
+            </div>
+
+            <div class="login-body">
+                @if (TempData["Success"] != null)
+                {
+                <div class="alert alert-success" role="alert">
+                    <i class="fas fa-check-circle"></i> @TempData["Success"]
+                </div>
+                }
+
+                @if (TempData["Info"] != null)
+                {
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle"></i> @TempData["Info"]
+                </div>
+                }
+
+                <form asp-action="Login" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-group">
+                        <label asp-for="Email">
+                            <i class="fas fa-envelope"></i> Email
+                        </label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                            </div>
+                            <input asp-for="Email" class="form-control" placeholder="Entrez votre email" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Password">
+                            <i class="fas fa-lock"></i> Mot de passe
+                        </label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-key"></i>
+                                </span>
+                            </div>
+                            <input asp-for="Password" class="form-control" placeholder="Entrez votre mot de passe" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="rememberMe" asp-for="RememberMe">
+                        <label class="custom-control-label" for="rememberMe">
+                            Se souvenir de moi
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-sign-in-alt"></i> Se connecter
+                    </button>
+                </form>
+
+                <div class="divider">
+                    <span>ou</span>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="/Home/Index" class="btn btn-link home-link">
+                        <i class="fas fa-home"></i> Retour à l'accueil
+                    </a>
+                </div>
+            </div>
+
+            <div class="login-footer">
+                <p>
+
+                    <i class="fas fa-shield-alt"></i>
+                    Connexion sécurisée
+                </p>
+            </div>
+        </div>
+
+        <div class="copyright">
+            © @DateTime.Now.Year CarRental - Tous droits réservés
+        </div>
+    </div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

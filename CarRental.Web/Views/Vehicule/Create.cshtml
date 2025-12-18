@@ -1,0 +1,381 @@
+﻿@model CarRental.Core.Models.Vehicule
+
+@{
+    ViewData["Title"] = "Ajouter un Véhicule";
+    var maxYear = (DateTime.Now.Year + 1).ToString();
+    var maxDate = DateTime.Now.ToString("yyyy-MM-dd");
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+
+    @if (TempData["Success"] != null)
+    {
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    }
+
+    @if (TempData["Warning"] != null)
+    {
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        @TempData["Warning"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    }
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Informations du véhicule</h5>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Affichage des erreurs de validation générales -->
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Statut et EstActif seront gérés automatiquement par le contrôleur -->
+                        <input type="hidden" asp-for="Statut" value="Disponible" />
+                        <input type="hidden" asp-for="EstActif" value="true" />
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Marque" class="form-label fw-bold">Marque *</label>
+                                <input asp-for="Marque" class="form-control" placeholder="Ex: Renault, Peugeot..." required />
+                                <span asp-validation-for="Marque" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Modele" class="form-label fw-bold">Modèle *</label>
+                                <input asp-for="Modele" class="form-control" placeholder="Ex: Clio, 208..." required />
+                                <span asp-validation-for="Modele" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Immatriculation" class="form-label fw-bold">Immatriculation *</label>
+                                <input asp-for="Immatriculation" class="form-control text-uppercase" placeholder="Ex: AB-123-CD" required />
+                                <small class="form-text text-muted">Format: XX-XXX-XX</small>
+                                <span asp-validation-for="Immatriculation" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CategorieId" class="form-label fw-bold">Catégorie existante</label>
+                                <select asp-for="CategorieId" class="form-select" asp-items="ViewBag.CategorieId" id="existingCategory">
+                                    <option value="">-- Sélectionnez une catégorie --</option>
+                                </select>
+                                <small class="form-text text-muted">Ou créez-en une nouvelle ci-dessous</small>
+                            </div>
+                        </div>
+
+                        <!-- Section pour créer une nouvelle catégorie -->
+                        <div class="card mt-3" id="newCategorySection" style="display: none;">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Créer une nouvelle catégorie</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="NewCategoryName" class="form-label fw-bold">Nom de la catégorie *</label>
+                                    <input type="text" class="form-control" name="NewCategoryName" id="NewCategoryName"
+                                           placeholder="Ex: Berline, SUV, Utilitaire...">
+                                    <span class="text-danger field-validation-valid" data-valmsg-for="NewCategoryName" data-valmsg-replace="true"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="NewCategoryDescription" class="form-label">Description</label>
+                                    <textarea class="form-control" name="NewCategoryDescription" id="NewCategoryDescription" rows="2"
+                                              placeholder="Description de la catégorie (optionnel)"></textarea>
+                                </div>
+
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="useExistingCategory">
+                                    <label class="form-check-label" for="useExistingCategory">
+                                        Utiliser une catégorie existante à la place
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-outline-primary" id="toggleNewCategory">
+                                    <i class="fas fa-plus me-2"></i> Créer une nouvelle catégorie
+                                </button>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Annee" class="form-label fw-bold">Année</label>
+                                <input asp-for="Annee" type="number" class="form-control" min="1900" max="@maxYear" placeholder="@DateTime.Now.Year" />
+                                <span asp-validation-for="Annee" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Kilometrage" class="form-label fw-bold">Kilométrage (km)</label>
+                                <input asp-for="Kilometrage" type="number" class="form-control" min="0" step="100" value="0" />
+                                <span asp-validation-for="Kilometrage" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="NombrePlaces" class="form-label fw-bold">Nombre de Places</label>
+                                <input asp-for="NombrePlaces" type="number" class="form-control" min="1" max="50" value="5" />
+                                <span asp-validation-for="NombrePlaces" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Couleur" class="form-label fw-bold">Couleur</label>
+                                <input asp-for="Couleur" class="form-control" list="couleurs" placeholder="Ex: Noir, Blanc..." />
+
+                                <datalist id="couleurs">
+                                    <option value="Noir"></option>
+                                    <option value="Blanc"></option>
+                                    <option value="Gris"></option>
+                                    <option value="Bleu"></option>
+                                    <option value="Rouge"></option>
+                                    <option value="Argent"></option>
+                                    <option value="Vert"></option>
+                                </datalist>
+
+                                <span asp-validation-for="Couleur" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DateAchat" class="form-label fw-bold">Date d'Achat</label>
+                                <input asp-for="DateAchat" type="date" class="form-control" max="@maxDate" />
+                                <span asp-validation-for="DateAchat" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Section Prix d'Achat et Prix par Jour -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PrixAchat" class="form-label fw-bold">Prix d'Achat (MAD)</label>
+                                <div class="input-group">
+                                    <input asp-for="PrixAchat" type="number" class="form-control" step="0.01" min="0" placeholder="0.00" />
+                                    <span class="input-group-text">MAD</span>
+                                </div>
+                                <small class="form-text text-muted">Coût d'acquisition du véhicule</small>
+                                <span asp-validation-for="PrixAchat" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PrixParJour" class="form-label fw-bold">Prix par Jour (MAD) *</label>
+                                <div class="input-group">
+                                    <input asp-for="PrixParJour" type="number" class="form-control" step="0.01" min="1"
+                                           placeholder="50.00" value="50.00" required />
+                                    <span class="input-group-text">MAD</span>
+                                </div>
+                                <small class="form-text text-muted">Prix de location par jour</small>
+                                <span asp-validation-for="PrixParJour" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <h5 class="mb-3"><i class="fas fa-wrench me-2"></i>Informations d'entretien (optionnel)</h5>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DateDernierEntretien" class="form-label fw-bold">Date du Dernier Entretien</label>
+                                <input asp-for="DateDernierEntretien" type="date" class="form-control" max="@maxDate" />
+                                <span asp-validation-for="DateDernierEntretien" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="KilometrageDernierEntretien" class="form-label fw-bold">Kilométrage Dernier Entretien (km)</label>
+                                <input asp-for="KilometrageDernierEntretien" type="number" class="form-control" min="0" step="100" placeholder="0" />
+                                <span asp-validation-for="KilometrageDernierEntretien" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fas fa-save me-2"></i> Enregistrer
+                            </button>
+
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Retour à la liste
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-info-circle me-2"></i>Aide</h5>
+                    <p class="card-text small">
+                        <strong>Champs obligatoires (*) :</strong><br />
+                        • Marque<br />
+                        • Modèle<br />
+                        • Immatriculation (unique)<br />
+                        • Prix par Jour
+                    </p>
+                    <hr />
+                    <p class="card-text small">
+                        <strong>Valeurs par défaut :</strong><br />
+                        • Statut : Disponible<br />
+                        • Kilométrage : 0 km<br />
+                        • Nombre de places : 5<br />
+                        • Véhicule actif : Oui<br />
+                        • Prix par jour : 50 MAD
+                    </p>
+                    <hr />
+                    <p class="card-text small">
+                        <strong>Nouvelle catégorie :</strong><br />
+                        • Cliquez sur "Créer une nouvelle catégorie"<br />
+                        • Remplissez les champs Nom et Description<br />
+                        • La catégorie sera créée automatiquement
+                    </p>
+                    <hr />
+                    <p class="card-text small mb-0">
+                        <strong>Remarques :</strong><br />
+                        • L'année doit être entre 1900 et @maxYear<br />
+                        • L'immatriculation sera en majuscules<br />
+                        • La catégorie est optionnelle<br />
+                        • Les infos d'entretien sont optionnelles<br />
+                        • Prix par jour minimum : 1 MAD
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        // Gérer l'affichage/masquage de la section nouvelle catégorie
+        document.getElementById('toggleNewCategory').addEventListener('click', function () {
+            const section = document.getElementById('newCategorySection');
+            const button = this;
+
+            if (section.style.display === 'none' || section.style.display === '') {
+                section.style.display = 'block';
+                button.innerHTML = '<i class="fas fa-minus me-2"></i> Masquer la création de catégorie';
+                button.classList.remove('btn-outline-primary');
+                button.classList.add('btn-outline-secondary');
+
+                // Désactiver la sélection de catégorie existante
+                document.getElementById('existingCategory').value = '';
+                document.getElementById('existingCategory').disabled = true;
+            } else {
+                section.style.display = 'none';
+                button.innerHTML = '<i class="fas fa-plus me-2"></i> Créer une nouvelle catégorie';
+                button.classList.remove('btn-outline-secondary');
+                button.classList.add('btn-outline-primary');
+
+                // Réactiver la sélection de catégorie existante
+                document.getElementById('existingCategory').disabled = false;
+            }
+        });
+
+        // Gérer la case à cocher "Utiliser une catégorie existante"
+        document.getElementById('useExistingCategory').addEventListener('change', function () {
+            if (this.checked) {
+                document.getElementById('existingCategory').disabled = false;
+                document.getElementById('NewCategoryName').disabled = true;
+                document.getElementById('NewCategoryDescription').disabled = true;
+            } else {
+                document.getElementById('existingCategory').disabled = true;
+                document.getElementById('NewCategoryName').disabled = false;
+                document.getElementById('NewCategoryDescription').disabled = false;
+            }
+        });
+
+        // Validation avant soumission
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const newCategorySection = document.getElementById('newCategorySection');
+            const isNewCategoryVisible = newCategorySection.style.display === 'block';
+
+            if (isNewCategoryVisible) {
+                const newCategoryName = document.getElementById('NewCategoryName').value.trim();
+                const useExisting = document.getElementById('useExistingCategory').checked;
+
+                if (!useExisting && !newCategoryName) {
+                    e.preventDefault();
+                    alert('Veuillez saisir un nom pour la nouvelle catégorie ou cocher "Utiliser une catégorie existante".');
+                    document.getElementById('NewCategoryName').focus();
+                    return false;
+                }
+            }
+
+            // Validation kilométrage
+            const kilometrage = parseInt(document.querySelector('input[name="Kilometrage"]').value) || 0;
+            const kmEntretien = parseInt(document.querySelector('input[name="KilometrageDernierEntretien"]').value) || 0;
+
+            if (kmEntretien > 0 && kmEntretien > kilometrage) {
+                e.preventDefault();
+                alert('Le kilométrage du dernier entretien ne peut pas être supérieur au kilométrage actuel.');
+                return false;
+            }
+
+            // Validation PrixParJour
+            const prixParJour = parseFloat(document.querySelector('input[name="PrixParJour"]').value);
+            if (prixParJour <= 0) {
+                e.preventDefault();
+                alert('Le prix par jour doit être supérieur à 0 MAD.');
+                document.querySelector('input[name="PrixParJour"]').focus();
+                return false;
+            }
+
+            // Validation PrixAchat (optionnel mais si rempli doit être positif)
+            const prixAchat = parseFloat(document.querySelector('input[name="PrixAchat"]').value) || 0;
+            if (prixAchat < 0) {
+                e.preventDefault();
+                alert('Le prix d\'achat ne peut pas être négatif.');
+                document.querySelector('input[name="PrixAchat"]').focus();
+                return false;
+            }
+
+            // Forcer l'immatriculation en majuscules si ce n'est pas déjà fait
+            const immatInput = document.querySelector('input[name="Immatriculation"]');
+            if (immatInput) {
+                immatInput.value = immatInput.value.toUpperCase();
+            }
+        });
+
+        // Forcer l'immatriculation en majuscules en temps réel
+        document.querySelector('input[name="Immatriculation"]')?.addEventListener('input', function (e) {
+            this.value = this.value.toUpperCase();
+        });
+
+        // Formatage automatique des prix
+        document.querySelectorAll('input[type="number"][step="0.01"]').forEach(input => {
+            input.addEventListener('blur', function () {
+                if (this.value) {
+                    // S'assurer qu'il y a au moins 2 décimales
+                    let value = parseFloat(this.value);
+                    if (!isNaN(value)) {
+                        this.value = value.toFixed(2);
+                    }
+                }
+            });
+        });
+    </script>
+}

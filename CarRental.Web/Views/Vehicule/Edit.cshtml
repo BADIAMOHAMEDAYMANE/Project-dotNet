@@ -1,0 +1,594 @@
+﻿@model CarRental.Core.Models.Vehicule
+
+@{
+    ViewData["Title"] = "Modifier Véhicule";
+    var maxYear = (DateTime.Now.Year + 1).ToString();
+    var maxDate = DateTime.Now.ToString("yyyy-MM-dd");
+}
+
+@section Styles {
+    <style>
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #dee2e6;
+        }
+
+        .card-header {
+            background-color: #ffc107;
+            color: #212529;
+            font-weight: 600;
+            border-bottom: 2px solid #ffca2c;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-control:focus {
+            border-color: #ffc107;
+            box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #212529;
+        }
+
+            .btn-warning:hover {
+                background-color: #e0a800;
+                border-color: #d39e00;
+                color: #212529;
+            }
+
+        .required-field::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        .readonly-field {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+    </style>
+}
+
+<div class="container mt-4">
+    <!-- En-tête avec bouton retour -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="fas fa-car text-warning me-2"></i>
+            @ViewData["Title"]
+        </h1>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+        </a>
+    </div>
+
+    <!-- Messages d'alerte -->
+    @if (TempData["Success"] != null)
+    {
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>
+                        Modification du véhicule : @Model.Marque @Model.Modele
+                    </h5>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Champs cachés -->
+                        <input type="hidden" asp-for="Id" />
+
+                        <!-- Messages de validation -->
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <!-- Section Informations de base -->
+                        <h6 class="border-bottom pb-2 mb-3 text-warning">
+                            <i class="fas fa-car me-2"></i>Informations de Base
+                        </h6>
+
+                        <div class="row">
+                            <!-- Marque -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Marque" class="form-label required-field"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-car"></i>
+                                    </span>
+                                    <input asp-for="Marque" class="form-control" placeholder="Ex: Renault, Peugeot...">
+                                </div>
+                                <span asp-validation-for="Marque" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Modèle -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Modele" class="form-label required-field"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-car-side"></i>
+                                    </span>
+                                    <input asp-for="Modele" class="form-control" placeholder="Ex: Clio, 208...">
+                                </div>
+                                <span asp-validation-for="Modele" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Immatriculation -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Immatriculation" class="form-label required-field"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-id-card"></i>
+                                    </span>
+                                    <input asp-for="Immatriculation" class="form-control text-uppercase" placeholder="Ex: AB-123-CD">
+                                </div>
+                                <small class="form-text text-muted">Format: XX-XXX-XX</small>
+                                <span asp-validation-for="Immatriculation" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Catégorie -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CategorieId" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-tags"></i>
+                                    </span>
+                                    <select asp-for="CategorieId" class="form-select" asp-items="ViewBag.CategorieId">
+                                        <option value="">-- Aucune catégorie --</option>
+                                    </select>
+                                </div>
+                                <span asp-validation-for="CategorieId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Section Caractéristiques -->
+                        <h6 class="border-bottom pb-2 mb-3 text-warning mt-4">
+                            <i class="fas fa-cogs me-2"></i>Caractéristiques
+                        </h6>
+
+                        <div class="row">
+                            <!-- Année -->
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Annee" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-calendar"></i>
+                                    </span>
+                                    <input asp-for="Annee" type="number" class="form-control" min="1900" max="@maxYear">
+                                </div>
+                                <span asp-validation-for="Annee" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Couleur -->
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Couleur" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-palette"></i>
+                                    </span>
+                                    <input asp-for="Couleur" class="form-control" list="couleurs" placeholder="Ex: Noir, Blanc...">
+                                </div>
+                                <datalist id="couleurs">
+                                    <option value="Noir"></option>
+                                    <option value="Blanc"></option>
+                                    <option value="Gris"></option>
+                                    <option value="Bleu"></option>
+                                    <option value="Rouge"></option>
+                                    <option value="Argent"></option>
+                                    <option value="Vert"></option>
+                                    <option value="Jaune"></option>
+                                    <option value="Orange"></option>
+                                    <option value="Marron"></option>
+                                </datalist>
+                                <span asp-validation-for="Couleur" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Nombre de places -->
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="NombrePlaces" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-users"></i>
+                                    </span>
+                                    <input asp-for="NombrePlaces" type="number" class="form-control" min="1" max="50">
+                                </div>
+                                <span asp-validation-for="NombrePlaces" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Kilométrage -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Kilometrage" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-road"></i>
+                                    </span>
+                                    <input asp-for="Kilometrage" type="number" class="form-control" min="0" step="100">
+                                    <span class="input-group-text">km</span>
+                                </div>
+                                <span asp-validation-for="Kilometrage" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Statut -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Statut" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-info-circle"></i>
+                                    </span>
+                                    <select asp-for="Statut" class="form-select">
+                                        <option value="Disponible">Disponible</option>
+                                        <option value="Loué">Loué</option>
+                                        <option value="En maintenance">En maintenance</option>
+                                        <option value="Indisponible">Indisponible</option>
+                                    </select>
+                                </div>
+                                <span asp-validation-for="Statut" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Section Prix -->
+                        <h6 class="border-bottom pb-2 mb-3 text-warning mt-4">
+                            <i class="fas fa-money-bill-wave me-2"></i>Informations de Prix
+                        </h6>
+
+                        <div class="row">
+                            <!-- Prix d'achat -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PrixAchat" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-tag"></i>
+                                    </span>
+                                    <input asp-for="PrixAchat" type="number" class="form-control" step="0.01" min="0">
+                                    <span class="input-group-text">MAD</span>
+                                </div>
+                                <span asp-validation-for="PrixAchat" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Prix par Jour -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PrixParJour" class="form-label required-field"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </span>
+                                    <input asp-for="PrixParJour" type="number" class="form-control" step="0.01" min="1" required>
+                                    <span class="input-group-text">MAD/jour</span>
+                                </div>
+                                <small class="form-text text-muted">Prix de location quotidienne</small>
+                                <span asp-validation-for="PrixParJour" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Date d'achat -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DateAchat" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </span>
+                                    <input asp-for="DateAchat" type="date" class="form-control" max="@maxDate">
+                                </div>
+                                <span asp-validation-for="DateAchat" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Section Entretien -->
+                        <h6 class="border-bottom pb-2 mb-3 text-warning mt-4">
+                            <i class="fas fa-wrench me-2"></i>Informations d'Entretien
+                        </h6>
+
+                        <div class="row">
+                            <!-- Date dernier entretien -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DateDernierEntretien" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </span>
+                                    <input asp-for="DateDernierEntretien" type="date" class="form-control" max="@maxDate">
+                                </div>
+                                <span asp-validation-for="DateDernierEntretien" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Kilométrage dernier entretien -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="KilometrageDernierEntretien" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-tools"></i>
+                                    </span>
+                                    <input asp-for="KilometrageDernierEntretien" type="number" class="form-control" min="0" step="100">
+                                    <span class="input-group-text">km</span>
+                                </div>
+                                <span asp-validation-for="KilometrageDernierEntretien" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Statut actif -->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <div class="form-check form-switch">
+                                    <input asp-for="EstActif" class="form-check-input" type="checkbox" role="switch" id="EstActif">
+                                    <label class="form-check-label" for="EstActif">
+                                        <i class="fas fa-toggle-on me-1"></i>Véhicule actif
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Un véhicule inactif ne sera pas disponible pour la location
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <a asp-action="Details" asp-route-id="@Model.Id"
+                                           class="btn btn-info">
+                                            <i class="fas fa-eye me-2"></i>Voir détails
+                                        </a>
+
+                                        <a asp-action="Delete" asp-route-id="@Model.Id"
+                                           class="btn btn-outline-danger ms-2">
+                                            <i class="fas fa-trash me-2"></i>Supprimer
+                                        </a>
+                                    </div>
+
+                                    <div>
+                                        <a asp-action="Index" class="btn btn-secondary me-2">
+                                            <i class="fas fa-times me-2"></i>Annuler
+                                        </a>
+
+                                        <button type="submit" class="btn btn-warning">
+                                            <i class="fas fa-save me-2"></i>Enregistrer les modifications
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Pied de carte avec informations -->
+                <div class="card-footer bg-light">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                ID Véhicule : <strong>@Model.Id</strong>
+                            </small>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <small class="text-muted">
+                                Prix actuel : <strong>@Model.PrixParJour.ToString("0.00") MAD/jour</strong>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonne latérale - Aide -->
+        <div class="col-lg-4">
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-info-circle me-2 text-primary"></i>Aide
+                    </h5>
+                    <p class="card-text small">
+                        <strong>Champs obligatoires (*) :</strong><br />
+                        • Marque<br />
+                        • Modèle<br />
+                        • Immatriculation (unique)<br />
+                        • Prix par Jour
+                    </p>
+                    <hr />
+                    <p class="card-text small">
+                        <strong>Statuts disponibles :</strong><br />
+                        • <span class="badge bg-success">Disponible</span> - Prêt à louer<br />
+                        • <span class="badge bg-warning">Loué</span> - En location<br />
+                        • <span class="badge bg-info">En maintenance</span> - En réparation<br />
+                        • <span class="badge bg-danger">Indisponible</span> - Hors service
+                    </p>
+                    <hr />
+                    <p class="card-text small">
+                        <strong>Prix recommandés :</strong><br />
+                        • Économique : 50-150 MAD/jour<br />
+                        • Standard : 150-300 MAD/jour<br />
+                        • Premium : 300-500 MAD/jour<br />
+                        • Luxe : 500+ MAD/jour
+                    </p>
+                    <hr />
+                    <p class="card-text small mb-0">
+                        <strong>Remarques :</strong><br />
+                        • L'immatriculation sera en majuscules<br />
+                        • Année entre 1900 et @maxYear<br />
+                        • Le kilométrage d'entretien ne peut pas dépasser le kilométrage actuel<br />
+                        • Prix minimum : 1 MAD/jour
+                    </p>
+                </div>
+            </div>
+
+            <!-- Alertes d'entretien -->
+            @if (Model.DateDernierEntretien.HasValue)
+            {
+                var joursDepuisEntretien = (DateTime.Now - Model.DateDernierEntretien.Value).Days;
+                var alertClass = joursDepuisEntretien > 180 ? "alert-danger" : joursDepuisEntretien > 90 ? "alert-warning" : "alert-info";
+
+            <div class="card border-0 mb-3">
+                <div class="card-body">
+                    <div class="@alertClass alert">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-wrench me-2"></i>Entretien
+                        </h6>
+                        <p class="mb-0 small">
+                            Dernier entretien : @Model.DateDernierEntretien.Value.ToString("dd/MM/yyyy")<br />
+                            <strong>Il y a @joursDepuisEntretien jours</strong>
+                        </p>
+                        @if (joursDepuisEntretien > 180)
+                            {
+                        <hr />
+                        <p class="mb-0 small">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            Entretien recommandé !
+                        </p>
+                            }
+                    </div>
+                </div>
+            </div>
+            }
+
+            <!-- Information prix actuel -->
+            <div class="card border-primary mb-3">
+                <div class="card-body">
+                    <h6 class="card-title text-primary">
+                        <i class="fas fa-money-bill-wave me-2"></i>Prix Actuel
+                    </h6>
+                    <div class="text-center py-3">
+                        <h3 class="text-success">@Model.PrixParJour.ToString("0.00")</h3>
+                        <p class="mb-0 small">MAD par jour</p>
+                    </div>
+                    <div class="small">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Ce prix sera utilisé pour toutes les nouvelles locations.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        $(document).ready(function () {
+            // Animation de la carte
+            $('.card').css('opacity', '0').animate({ opacity: 1 }, 600);
+
+            // Forcer l'immatriculation en majuscules
+            $('#Immatriculation').on('input', function () {
+                this.value = this.value.toUpperCase();
+            });
+
+            // Validation du kilométrage d'entretien
+            $('#KilometrageDernierEntretien, #Kilometrage').on('change', function () {
+                var km = parseInt($('#Kilometrage').val()) || 0;
+                var kmEntretien = parseInt($('#KilometrageDernierEntretien').val()) || 0;
+
+                if (kmEntretien > 0 && kmEntretien > km) {
+                    $('#KilometrageDernierEntretien').addClass('is-invalid');
+                    if ($('#km-validation').length === 0) {
+                        $('#KilometrageDernierEntretien').after(
+                            '<div id="km-validation" class="text-danger small">Le kilométrage d\'entretien ne peut pas dépasser le kilométrage actuel</div>'
+                        );
+                    }
+                } else {
+                    $('#KilometrageDernierEntretien').removeClass('is-invalid');
+                    $('#km-validation').remove();
+                }
+            });
+
+            // Validation du prix par jour
+            $('#PrixParJour').on('change', function () {
+                var prix = parseFloat($(this).val()) || 0;
+                if (prix <= 0) {
+                    $(this).addClass('is-invalid');
+                    if ($('#prix-validation').length === 0) {
+                        $(this).after(
+                            '<div id="prix-validation" class="text-danger small">Le prix par jour doit être supérieur à 0</div>'
+                        );
+                    }
+                } else {
+                    $(this).removeClass('is-invalid');
+                    $('#prix-validation').remove();
+                }
+            });
+
+            // Formatage automatique des prix à 2 décimales
+            $('#PrixParJour, #PrixAchat').on('blur', function () {
+                var value = parseFloat($(this).val());
+                if (!isNaN(value)) {
+                    $(this).val(value.toFixed(2));
+                }
+            });
+
+            // Confirmation avant soumission
+            $('form').on('submit', function (e) {
+                var km = parseInt($('#Kilometrage').val()) || 0;
+                var kmEntretien = parseInt($('#KilometrageDernierEntretien').val()) || 0;
+                var prixParJour = parseFloat($('#PrixParJour').val()) || 0;
+
+                if (kmEntretien > 0 && kmEntretien > km) {
+                    e.preventDefault();
+                    alert('Le kilométrage d\'entretien ne peut pas dépasser le kilométrage actuel !');
+                    return false;
+                }
+
+                if (prixParJour <= 0) {
+                    e.preventDefault();
+                    alert('Le prix par jour doit être supérieur à 0 MAD !');
+                    $('#PrixParJour').focus();
+                    return false;
+                }
+
+                // Forcer l'immatriculation en majuscules
+                $('#Immatriculation').val($('#Immatriculation').val().toUpperCase());
+
+                // Formater les prix
+                var prixAchat = parseFloat($('#PrixAchat').val());
+                if (!isNaN(prixAchat)) {
+                    $('#PrixAchat').val(prixAchat.toFixed(2));
+                }
+                if (!isNaN(prixParJour)) {
+                    $('#PrixParJour').val(prixParJour.toFixed(2));
+                }
+
+                if (!confirm('Êtes-vous sûr de vouloir enregistrer les modifications ?')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Alerte pour statut actif
+            $('#EstActif').on('change', function () {
+                if (!this.checked) {
+                    if (!confirm('Désactiver ce véhicule le rendra indisponible pour toute nouvelle location. Continuer ?')) {
+                        this.checked = true;
+                    }
+                }
+            });
+
+            $('#Marque').focus();
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}

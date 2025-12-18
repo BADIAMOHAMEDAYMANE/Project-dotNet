@@ -1,0 +1,168 @@
+@model IEnumerable<CarRental.Core.Models.Location>
+
+    @{
+    ViewData["Title"] = "Mes Demandes de Location";
+    }
+
+    <style>
+        .status-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .status-en-attente {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            color: #856404;
+        }
+
+        .status-approuvee {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+        }
+
+        .status-rejetee {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+        }
+
+        .location-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+            .location-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            }
+
+        .location-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0;
+        }
+    </style>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-list-alt me-2"></i>@ViewData["Title"]</h1>
+            <a asp-action="Create" class="btn btn-success">
+                <i class="fas fa-plus-circle me-2"></i>Nouvelle Demande
+            </a>
+        </div>
+
+        @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+        @if (Model != null && Model.Any())
+    {
+        <div class="row">
+            @foreach (var location in Model)
+            {
+                var statusClass = location.Statut switch
+                {
+                    "En attente" => "status-en-attente",
+                    "Approuvée" or "Confirmée" => "status-approuvee",
+                    "Rejetée" => "status-rejetee",
+                    _ => "bg-secondary text-white"
+                };
+
+                var statusIcon = location.Statut switch
+                {
+                    "En attente" => "fa-clock",
+                    "Approuvée" or "Confirmée" => "fa-check-circle",
+                    "Rejetée" => "fa-times-circle",
+                    _ => "fa-info-circle"
+                };
+
+            <div class="col-md-6 col-lg-4">
+                <div class="location-card">
+                    <div class="location-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-car me-2"></i>
+                                @(location.Vehicule?.Marque ?? "N/A") @(location.Vehicule?.Modele ?? "")
+                            </h5>
+                            <span class="status-badge @statusClass">
+                                <i class="fas @statusIcon me-1"></i>@location.Statut
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <p class="mb-2">
+                                <i class="fas fa-hashtag text-muted me-2"></i>
+                                <strong>Immatriculation:</strong>
+                                <span class="badge bg-secondary">@(location.Vehicule?.Immatriculation ?? "N/A")</span>
+                            </p>
+                            <p class="mb-2">
+                                <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                <strong>Du:</strong> @location.DateDebut.ToString("dd/MM/yyyy")
+                            </p>
+                            <p class="mb-2">
+                                <i class="fas fa-calendar-check text-success me-2"></i>
+                                <strong>Au:</strong> @location.DateFin.ToString("dd/MM/yyyy")
+                            </p>
+                            <p class="mb-2">
+                                <i class="fas fa-clock text-info me-2"></i>
+                                <strong>Durée:</strong> @location.NombreJours jour(s)
+                            </p>
+                            <p class="mb-2">
+                                <i class="fas fa-euro-sign text-success me-2"></i>
+                                <strong>Montant:</strong>
+                                <span class="fw-bold">@(location.PrixTotal?.ToString("N2") ?? "0,00") €</span>
+                            </p>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(location.Commentaires))
+                            {
+                        <div class="alert alert-light mb-3">
+                            <i class="fas fa-comment text-muted me-2"></i>
+                            <small>@location.Commentaires</small>
+                        </div>
+                            }
+
+                        <div class="d-grid gap-2">
+                            <a asp-action="Details" asp-route-id="@location.Id"
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye me-2"></i>Voir détails
+                            </a>
+                            @if (location.Statut == "En attente")
+                                {
+                            <a asp-action="Delete" asp-route-id="@location.Id"
+                               class="btn btn-outline-danger btn-sm"
+                               onclick="return confirm('Êtes-vous sûr de vouloir annuler cette demande ?')">
+                                <i class="fas fa-times me-2"></i>Annuler la demande
+                            </a>
+                                }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                <h4>Aucune demande de location</h4>
+                <p class="text-muted">Vous n'avez pas encore fait de demande de location.</p>
+                <a asp-action="Create" class="btn btn-success mt-3">
+                    <i class="fas fa-plus-circle me-2"></i>Faire une demande
+                </a>
+            </div>
+        </div>
+    }
+    </div>
