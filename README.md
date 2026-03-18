@@ -52,10 +52,9 @@ Le projet est structuré de manière modulaire :
 
 
          
-   `     git clone [https://github.com/BADIAMOHAMEDAYMANE/Project-dotNet.git](https://github.com/BADIAMOHAMEDAYMANE/Project-dotNet.git)
+   `        git clone [https://github.com/BADIAMOHAMEDAYMANE/Project-dotNet.git](https://github.com/BADIAMOHAMEDAYMANE/Project-dotNet.git)
 
-   
-          cd Project-dotNet
+             cd Project-dotNet
 
   ### 2.Appliquer les Migrations (Base de données) 
          dotnet ef database update --project CarRental.Data --startup-project CarRental.Web
