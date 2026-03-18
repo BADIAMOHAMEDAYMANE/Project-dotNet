@@ -60,5 +60,5 @@ Le projet est structuré de manière modulaire :
          dotnet run --project CarRental.Web
 
  ##  👤Auteur
-        Mohamed Aymane Badia
+         **Mohamed Aymane Badia**
         Étudiant en 4ème année – IA & Data Science
