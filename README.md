@@ -48,15 +48,15 @@ Le projet est structuré de manière modulaire :
 
 ## ⚙️ Installation & Lancement
 
-### 1. Cloner le projet**
+<h2>  1.Cloner le projet </h2>
    ```bash
    git clone [https://github.com/BADIAMOHAMEDAYMANE/Project-dotNet.git](https://github.com/BADIAMOHAMEDAYMANE/Project-dotNet.git)
    cd Project-dotNet
 
-     2. Appliquer les Migrations (Base de données)
+    <h2>  2.Appliquer les Migrations (Base de données) </h2>
          dotnet ef database update --project CarRental.Data --startup-project CarRental.Web
 
-     3. Lancer l'application
+     <h2> 3.Lancer l'application </h2>
         dotnet run --project CarRental.Web
 
      👤 Auteur
