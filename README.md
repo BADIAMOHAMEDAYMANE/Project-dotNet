@@ -49,15 +49,15 @@ Le projet est structuré de manière modulaire :
 ## ⚙️ Installation & Lancement
 
   ### 1.Cloner le projet 
-   `   git clone [https://github.com/BADIAMOHAMEDAYMANE/Project-dotNet.git](https://github.com/BADIAMOHAMEDAYMANE/Project-dotNet.git)
-       cd Project-dotNet
+   `     git clone [https://github.com/BADIAMOHAMEDAYMANE/Project-dotNet.git](https://github.com/BADIAMOHAMEDAYMANE/Project-dotNet.git)
+          cd Project-dotNet
 
   ### 2.Appliquer les Migrations (Base de données) 
          dotnet ef database update --project CarRental.Data --startup-project CarRental.Web
 
    ### 3.Lancer l'application 
-        dotnet run --project CarRental.Web
+         dotnet run --project CarRental.Web
 
-     👤 Auteur
+     ### 👤Auteur
         Mohamed Aymane Badia
 Étudiant en 4ème année – IA & Data Science
