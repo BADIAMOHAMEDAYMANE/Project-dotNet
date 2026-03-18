@@ -49,7 +49,8 @@ Le projet est structuré de manière modulaire :
 ## ⚙️ Installation & Lancement
 
   ### 1.Cloner le projet
-            ```bash git clone [https://github.com/BADIAMOHAMEDAYMANE/Project-dotNet.git](https://github.com/BADIAMOHAMEDAYMANE/Project-dotNet.git) cd Project-dotNet
+             git clone [https://github.com/BADIAMOHAMEDAYMANE/Project-dotNet.git](https://github.com/BADIAMOHAMEDAYMANE/Project-dotNet.git)
+                     cd Project-dotNet
 
 
   ### 2.Appliquer les Migrations (Base de données) 
