@@ -1,6 +1,6 @@
 # 🚗 Car Rental Management System (ASP.NET Core MVC)
 
-</style>
+
 
 <p align="left">
   <img src="https://img.shields.io/badge/ASP.NET%20Core%20MVC-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
